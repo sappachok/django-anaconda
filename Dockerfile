@@ -12,3 +12,8 @@ RUN mkdir ${APP_ROOT}
 WORKDIR ${APP_ROOT}
 
 ADD /app/ ${APP_ROOT}
+
+RUN cd /tmp
+RUN curl -O https://repo.continuum.io/archive/Anaconda3-2019.03-Linux-x86_64.sh
+RUN sha256sum Anaconda3-2019.03-Linux-x86_64.sh
+RUN bash Anaconda3-2019.03-Linux-x86_64.sh
