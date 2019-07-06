@@ -1,0 +1,50 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: devstarter-service
+spec:
+  selector:
+    app: devstarter
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-devstarter
+  labels:
+    app: devstarter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devstarter
+  template:
+    metadata:
+      labels:
+        app: devstarter
+    spec:
+      imagePullSecrets:
+      - name: pipeline-docker-registry
+      containers:
+      - name: devstarter
+        image: ${CICD_IMAGE}:${CICD_PIPELINE_ID}-${CICD_EXECUTION_SEQUENCE}
+        ports:
+        - containerPort: 80
+## Ingress example
+---
+#apiVersion: extensions/v1beta1
+#kind: Ingress
+#metadata:
+  #name: wunca39
+#spec:
+  #rules:
+  #- host: wunca39.192.168.84.142.nip.io
+    #http:
+      #paths:
+      #- backend:
+         #serviceName: devstarter-service
+         #servicePort: 80

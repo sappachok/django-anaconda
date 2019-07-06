@@ -1,0 +1,23 @@
+stages:
+- name: Build
+  steps:
+  - runScriptConfig:
+      image: alpine
+      shellScript: 
+- name: Publish
+  steps:
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
+      tag: devstart:${CICD_PIPELINE_ID}-${CICD_EXECUTION_SEQUENCE}
+## external registry
+#      pushRemote: true
+#      registry: index.docker.io
+- name: Deploy
+  steps:
+  - applyYamlConfig:
+      path: ./deployment.yaml
+timeout: 60
+branch:
+  include:
+  - master
