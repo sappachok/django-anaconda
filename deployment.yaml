@@ -1,3 +1,4 @@
+# deployment.yml
 kind: Service
 apiVersion: v1
 metadata:
@@ -8,8 +9,8 @@ spec:
   type: NodePort
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: 8000
+      targetPort: 8000
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -33,7 +34,7 @@ spec:
       - name: devstarter
         image: ${CICD_IMAGE}:${CICD_PIPELINE_ID}-${CICD_EXECUTION_SEQUENCE}
         ports:
-        - containerPort: 80
+        - containerPort: 8000
 ## Ingress example
 ---
 #apiVersion: extensions/v1beta1
@@ -47,4 +48,4 @@ spec:
       #paths:
       #- backend:
          #serviceName: devstarter-service
-         #servicePort: 80
+         #servicePort: 8000

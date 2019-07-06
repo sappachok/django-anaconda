@@ -1,3 +1,4 @@
+# .rancher-pipeline.yml
 stages:
 - name: Build
   steps:
@@ -11,8 +12,8 @@ stages:
       buildContext: .
       tag: devstart:${CICD_PIPELINE_ID}-${CICD_EXECUTION_SEQUENCE}
 ## external registry
-#      pushRemote: true
-#      registry: index.docker.io
+      pushRemote: true
+      registry: index.docker.io
 #- name: Deploy
 #  steps:
 #  - applyYamlConfig:
