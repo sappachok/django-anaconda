@@ -26,6 +26,6 @@ WORKDIR ${APP_ROOT}
 
 ADD /app/ ${APP_ROOT}
 
-RUN python3 manage.py runserver 0.0.0.0:8000
+# RUN python3 manage.py runserver 0.0.0.0:8000
 
 EXPOSE 8000
