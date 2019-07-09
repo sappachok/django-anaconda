@@ -1,6 +1,8 @@
 import os
 from django.shortcuts import render
+from django.views.generic import TemplateView
 import pandas as pd
+# from hello_world.templatetags import current_tags
 
 import matplotlib.pyplot as plt
 # %matplotlib inline
@@ -15,7 +17,8 @@ def hello_world(request):
     path = app_dir
     debug = ''
     df = pd.read_csv(os.path.join(app_dir, 'data_sheets','titanic.csv'))
-    content = {'blog_title':'my first app', 'person':df, 'path':path, 'debug':debug}
-    return render(request, 'hello_world.html', content)
+    data = {'blog_title':'my first app', 'person':df, 'path':path, 'debug':debug, 'listview': ''}
+    return render(request, 'hello_world.html', data)
 
-def print_datalist
+class AboutView(TemplateView):
+    template_name = "about.html"
