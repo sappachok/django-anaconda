@@ -1,6 +1,8 @@
 version: "3"
 
 services:
+  db:
+    image: postgres
   app:
     build: .
     container_name: django-gunicorn
@@ -8,12 +10,13 @@ services:
     env_file:
       - django.env
     volumes:
-      - d:/docker/datas/django/src:/src
+      - ./app:/src
     ports:
       - "8000:8000"
     command:
       "gunicorn --workers=2 --bind=0.0.0.0:8000 mysite.wsgi:application"
-
+    depends_on:
+      - db
   nginx:
     image: nginx:1.17
     container_name: ngx
