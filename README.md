@@ -39,3 +39,9 @@ Run the built container
 ```
 docker-compose up -d
 ```
+
+Migrate and Create Django admin user from gunicorn container
+```
+python manage.py migrate
+python manage.py createsuperuser
+```

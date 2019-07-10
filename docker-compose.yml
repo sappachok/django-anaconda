@@ -3,6 +3,7 @@ version: "3"
 services:
   db:
     image: postgres
+    container_name: db
   app:
     build: .
     container_name: django-gunicorn

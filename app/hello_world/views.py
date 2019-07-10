@@ -4,6 +4,10 @@ from django.views.generic import TemplateView
 import pandas as pd
 # from hello_world.templatetags import current_tags
 
+from django import template
+
+register = template.Library()
+
 import matplotlib.pyplot as plt
 # %matplotlib inline
 
