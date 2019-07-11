@@ -5,7 +5,11 @@
 curpath : {{ path }}<br>
 <b>content:</b><br>
 {{ blog_title }}<br>
-<p>{{ person }}</p>
-<p>
-{{ debug }}
-</p>
+
+{% for out in output %}
+{% if out.type == 'image' %}
+	<img src="{{ out.src }}">
+{% endif %}
+{% endfor %}
+
+{{ script }}

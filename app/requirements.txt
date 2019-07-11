@@ -2,6 +2,8 @@ Django==2.2.3
 gunicorn==19.9.0
 pytz==2019.1
 psycopg2
+requests
+subprocess.run
 numpy
 scipy
 scikit-learn

@@ -13,5 +13,5 @@ WORKDIR ${APP_ROOT}
 
 ADD /app/ ${APP_ROOT}
 
-# COPY ./docker-entrypoint.sh /
-# ENTRYPOINT ["/docker-entrypoint.sh"]
+# COPY ./docker-entrypoint.sh /src/docker-entrypoint.sh
+# ENTRYPOINT ["/src/docker-entrypoint.sh"]
