@@ -36,7 +36,7 @@ def hello_world(request):
 
 def call_pot(request):
     inp = 'sappachok'
-    out = run([sys.executable,'/src/hello_world/scripts/pot.py'],shell=False,stdout=PIPE)
+    out = run([sys.executable,'/src/hello_world/scripts/pot.py', inp],shell=False,stdout=PIPE).stdout.decode('utf-8')
     print(out)
 
     return render(request, 'pot.html', {'data':out.stdout})
