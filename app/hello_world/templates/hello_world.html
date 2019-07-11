@@ -5,4 +5,8 @@
 curpath : {{ path }}<br>
 <b>content:</b><br>
 {{ blog_title }}<br>
-{{ script }}
+{% for out in arr_output %}
+{% if out.type == 'image' %}
+	<img src="{{ out.src }}">
+{% endif %}
+{% endfor %}

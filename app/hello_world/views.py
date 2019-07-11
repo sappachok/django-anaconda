@@ -6,6 +6,8 @@ import sys
 from subprocess import run,PIPE
 import io
 import urllib, base64
+import json
+#from StringIO import StringIO
 
 import random
 import pandas as pd
@@ -30,23 +32,27 @@ def hello_world(request):
     df = pd.read_csv(os.path.join(app_dir, 'data_sheets','titanic.csv'))
 
     imageurl = setPlt()
-
-    data = {'blog_title': 'my first app', 'person': df, 'path': path, 'debug': debug, 'listview': '', 'output': ''}
+    arr_output = []
+    arr_output.append(setImage(setPlt()))
+    data = {'blog_title': 'my first app', 'person': df, 'path': path, 'debug': debug, 'listview': '', 'arr_output': arr_output}
     return render(request, 'hello_world.html', data)
 
 def call_pot(request):
-    inp = 'sappachok'
-    out = run([sys.executable,'/src/hello_world/scripts/pot.py', inp],shell=False,stdout=PIPE).stdout.decode('utf-8')
+    out = run([sys.executable,'/src/hello_world/scripts/pot.py'],shell=False,stdout=PIPE).stdout.decode('utf-8')
     print(out)
 
     return render(request, 'pot.html', {'data':out.stdout})
 
 def call_func(request):
     inp = 'sappachok'
-    out = run([sys.executable,'/src/hello_world/scripts/test.py', inp],shell=False,stdout=PIPE)
-    print(out)
+    output = run([sys.executable,'/src/hello_world/scripts/test.py', inp],shell=False,stdout=PIPE).stdout.decode('utf-8')
+    arr_output = []
+    try:
+        arr_output = json.loads(output)
+    except:
+        arr_output.append("script has error!!")
 
-    return render(request, 'output.html', {'data':out.stdout})
+    return render(request, 'output.html', {'output':arr_output})
 
 def setPlt():
     numPts = 50
@@ -67,7 +73,7 @@ def setPlt():
     return uri
 
 def setImage(imagedata):
-    image = { 'type':'image', 'src': imagedata}
+    image = {'type':'image', 'src': imagedata}
     return image
 
 def load_file(path):
