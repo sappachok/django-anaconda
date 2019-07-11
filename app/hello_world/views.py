@@ -31,13 +31,7 @@ def hello_world(request):
 
     imageurl = setPlt()
 
-    output = []
-    output.append(setImage(setPlt()))
-
-    script = load_file("/src/hello_world/scripts/test.py")
-
-    text = "" #exec(open('/src/hello_world/scripts/test.py').read())
-    data = {'blog_title': 'my first app', 'person': df, 'path': path, 'debug': debug, 'listview': '', 'output': output, 'script': text}
+    data = {'blog_title': 'my first app', 'person': df, 'path': path, 'debug': debug, 'listview': '', 'output': ''}
     return render(request, 'hello_world.html', data)
 
 def call_pot(request):

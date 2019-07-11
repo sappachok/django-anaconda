@@ -1,0 +1,5 @@
+{% for out in output %}
+{% if out.type == 'image' %}
+	<img src="{{ out.src }}">
+{% endif %}
+{% endfor %}
