@@ -1,7 +1,8 @@
 Django==2.2.3
-djangocodemirror
 gunicorn==19.9.0
 pytz==2019.1
+djangocodemirror
+django-codemirror-widget
 psycopg2
 requests
 subprocess.run

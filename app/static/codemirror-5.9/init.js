@@ -3,8 +3,12 @@
     $(document).ready(function(){
         $('textarea.html-editor').each(function(idx, el){
             CodeMirror.fromTextArea(el, {
-                lineNumbers: true,
-                mode: 'htmlmixed'
+                mode: {name: "python",
+					   version: 3,
+					   singleLineStringErrors: false},
+				lineNumbers: true,
+				indentUnit: 4,
+				matchBrackets: true
             });
         });
     });
