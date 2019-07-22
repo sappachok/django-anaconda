@@ -1,0 +1,38 @@
+from django import forms
+from djangocodemirror.fields import CodeMirrorField, CodeMirrorWidget
+
+class SampleForm(forms.Form):
+    """
+    Just a very basic form for tests
+    """
+    foo = CodeMirrorField(label="Foo",
+                          required=True,
+                          config_name="python",
+                          initial='Hello World!')
+
+class ManyFieldsSampleForm(forms.Form):
+    """
+    Basic form for tests with multiple CodeMirrorField
+    """
+    foo = CodeMirrorField(label="Foo",
+                          required=True,
+                          config_name="basic",
+                          initial='Hello World!')
+    pika = CodeMirrorField(label="Pika",
+                          required=True,
+                          config_name="basic",
+                          initial='Catch them all')
+    ping = CodeMirrorField(label="Ping",
+                          required=True,
+                          config_name="with-all",
+                          initial='Zouip')
+
+
+class NoBundleForm(forms.Form):
+    """
+    Form for a field with a config without bundle
+    """
+    foo = CodeMirrorField(label="Foo",
+                          required=True,
+                          config_name="without-bundle",
+                          initial='Hello World!')

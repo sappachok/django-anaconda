@@ -1,0 +1,7 @@
+{% load djangocodemirror_tags %}
+
+<form>
+    <textarea id="code" name="code">Lorem ipsum dolor sit amet.</textarea>
+</form>
+
+{% codemirror_instance 'restructuredtext' 'code_codemirror' 'code' %}

@@ -1,0 +1,15 @@
+{% load djangocodemirror_tags %}
+
+<form action="." method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit">
+</form>
+
+{% codemirror_field_css_assets form.foo %}
+{% codemirror_field_js_assets form.foo %}
+<script>
+    var foo_codemirror = CodeMirror.fromTextArea(
+        document.getElementById("id_foo"),
+        {{ form.foo|codemirror_parameters }}
+    );
+</script>

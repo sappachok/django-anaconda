@@ -1,5 +1,6 @@
 import os
 import ast
+from djangocodemirror.settings import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +29,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'hello_world',
+    'editor',
+    'djangocodemirror',
+    'codemirror',
 ]
 
 MIDDLEWARE = [
