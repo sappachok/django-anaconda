@@ -12,6 +12,8 @@ import json
 import random
 import pandas as pd
 import numpy as np
+
+import psycopg2
 # from hello_world.templatetags import current_tags
 
 import matplotlib.pyplot as plt
@@ -19,6 +21,33 @@ import matplotlib.pyplot as plt
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 # Create your views here.
+
+def testscript(request):
+    result = ""
+    try:
+        connection = psycopg2.connect(user="postgres",
+                                      password="postgres",
+                                      host="db",
+                                      port="5432",
+                                      database="postgres")
+        cursor = connection.cursor()
+        # Print PostgreSQL Connection properties
+        print(connection.get_dsn_parameters(), "\n")
+        # Print PostgreSQL version
+        cursor.execute("SELECT version();")
+        record = cursor.fetchone()
+        print("You are connected to - ", record, "\n")
+    except (Exception, psycopg2.Error) as error:
+        print("Error while connecting to PostgreSQL", error)
+    finally:
+        # closing database connection.
+        if (connection):
+            cursor.close()
+            connection.close()
+            print("PostgreSQL connection is closed")
+
+    data = {'info': ''}
+    return render(request, 'script.html', data)
 
 def run_script():
     tmp_output = ''
