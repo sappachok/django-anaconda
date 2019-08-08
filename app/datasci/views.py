@@ -47,13 +47,12 @@ def connectdb():
         cursor.execute("""SELECT
            *
         FROM
-           pg_catalog.pg_tables
-        WHERE
-           schemaname != 'pg_catalog'
-        AND schemaname != 'information_schema'
+           editor_pythoncode
         """)
-        record = cursor.fetchone()
-        arr_output.append("Tables - {0}".format(record))
+        records = cursor.fetchall()
+        for rec in records :
+           arr_output.append("Record - {0}".format(rec))
+
         return arr_output
         # query_python_code()
     except (Exception, psycopg2.Error) as error:
