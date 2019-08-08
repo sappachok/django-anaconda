@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'editor',
     'djangocodemirror',
     'codemirror',
+    'datasci',
 ]
 
 MIDDLEWARE = [

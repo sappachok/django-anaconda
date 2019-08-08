@@ -1,0 +1,11 @@
+<h1>View Data</h1>
+<hr>
+<b>content:</b><br>
+{{ blog_title }}<br>
+{% for out in output %}
+{% if out.type == 'image' %}
+	<img src="{{ out.src }}">
+{% else %}
+	<p>{{ out }}</p>
+{% endif %}
+{% endfor %}

@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello', include('hello_world.urls')),
     path('editor', include('editor.urls')),
+    path('datasci', include('datasci.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
