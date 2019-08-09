@@ -10,18 +10,14 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="container">
-	{% for out in output_list %}
-	{% if out.type == "header" %}
-		<h1>{{ out.val }}</h1>
-	{% elif out.type == "text" %}
-		<p>{{ out.val }}</p>
-	{% elif out.type == "image" %}
-		<img src="{{ out.val }}" />
-	{% else %}
-		{{ out.type }}
-	{% endif %}
-	{% endfor %}
-</div>
+<h1>Datasci Project</h1>
 </body>
 </html>
+<script>
+$(document).ready(function() {
+
+	$.getJSON( "{{ get_project_url }}", function( data ) {
+		console.log(data.status);
+	});
+});
+</script>

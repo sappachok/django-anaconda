@@ -2,8 +2,9 @@ import os
 from django.shortcuts import render
 # from django.views.generic import TemplateView
 from django.views.generic.base import TemplateView
-
 from django.core.management.base import BaseCommand
+from django.http import HttpResponse
+
 from subprocess import Popen
 from sys import stdout, stdin, stderr
 import time, os, signal
@@ -33,25 +34,35 @@ app_dir = os.path.abspath(os.path.dirname(__file__))
 def datasci(request):
     # db_output = connectdb()
     db_output = []
-    test = Command(["python", os.path.join(app_dir, "my.py")])
-    db_output.append(test)
+
+    data = {'blog_title': 'Datasci App', 'get_project_url': 'getproject'}
+    return render(request, 'project.html', data)
+
+def getproject(request, pid):
+    # db_output = connectdb()
+    # output = []
+    output = Command(["python", os.path.join(app_dir, "runscript.py"), pid])
+    # output.append(test)
     # command = "print('test')"
     # process = Popen(command, stdout=PIPE, stderr=STDOUT)
     # db_output.append(process.stdout.read())
-    data = {'blog_title': 'Datasci App', 'output' : db_output}
+    data = {'blog_title': 'Datasci App', 'output_list': output}
+    # pretty_data = db_output
+    # return HttpResponse(pretty_data, content_type="application/json")
     return render(request, 'view-data.html', data)
+
 
 def Command(cmd):
     command = cmd
     try:
         process = Popen(command, stdout=PIPE, stderr=STDOUT, encoding="utf-8")
-        output = process.stdout.read()
+        output = json.loads(process.stdout.read())
         exitstatus = process.poll()
 
         if (exitstatus == 0):
-            return {"status": "Success", "output": output}
+            return output
         else:
-            return {"status": "Failed", "output": output}
+            return false
     except Exception as e:
         return {"status": "failed", "output": str(e)}
 
