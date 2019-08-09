@@ -33,7 +33,16 @@ class Invite(models.Model):
     notes = models.TextField(blank=True)
 
 class PythonCode(models.Model):
-    name = models.CharField(max_length=500)
+    name = models.CharField(max_length=200)
+    script = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+class PythonLab(models.Model):
+    name = models.CharField(max_length=200)
+    title = models.CharField(max_length=500)
+    description = models.TextField(blank=True)
     script = models.TextField(blank=True)
 
     def __unicode__(self):

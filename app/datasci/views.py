@@ -30,6 +30,12 @@ import matplotlib.pyplot as plt
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
+connection = psycopg2.connect(user="postgres",
+                                           password="postgres",
+                                           host="db",
+                                           port="5432",
+                                           database="postgres")
+
 # Create your views here.
 def datasci(request):
     # db_output = connectdb()
@@ -38,19 +44,30 @@ def datasci(request):
     data = {'blog_title': 'Datasci App', 'get_project_url': 'getproject'}
     return render(request, 'project.html', data)
 
-def getproject(request, pid):
+def project(request, pid):
     # db_output = connectdb()
     # output = []
+    project_info = get_project_info(pid)
     output = Command(["python", os.path.join(app_dir, "runscript.py"), pid])
     # output.append(test)
     # command = "print('test')"
     # process = Popen(command, stdout=PIPE, stderr=STDOUT)
     # db_output.append(process.stdout.read())
-    data = {'blog_title': 'Datasci App', 'output_list': output}
+
+    data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output_list': output}
     # pretty_data = db_output
     # return HttpResponse(pretty_data, content_type="application/json")
     return render(request, 'view-data.html', data)
 
+def get_project_info(pid):
+    try:
+        cursor = connection.cursor()
+        select = """SELECT name, title, description FROM editor_pythonlab WHERE name='{0}'""".format(pid)
+        cursor.execute(select)
+        record = cursor.fetchone()
+        return record
+    except (Exception, psycopg2.Error) as error:
+        print("Error while connecting to PostgreSQL : {0}" + format(error))
 
 def Command(cmd):
     command = cmd

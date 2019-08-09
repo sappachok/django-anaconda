@@ -52,7 +52,7 @@ class loader:
     def get_script(self, pid):
         try:
             cursor = self.connection.cursor()
-            select = """SELECT script FROM editor_pythoncode WHERE name='{0}'""".format(pid)
+            select = """SELECT script FROM editor_pythonlab WHERE name='{0}'""".format(pid)
             cursor.execute(select)
             record = cursor.fetchone()
             #print(record[0])
@@ -64,7 +64,9 @@ class loader:
 pid = sys.argv[1]
 python = loader()
 tmp = python.get_script(pid)
+op = OutputBuffer()
 exec(tmp)
+op.val()
 #script.dbversion()
 #res = connectdb()
 #print(res)
