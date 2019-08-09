@@ -3,9 +3,9 @@
 <b>content:</b><br>
 {{ blog_title }}<br>
 {% for out in output %}
-{% if out.type == 'image' %}
-	<img src="{{ out.src }}">
+{% if out.output.image == "type" %}
+	<img src="{{ out.output }}">
 {% else %}
-	<p>{{ out }}</p>
+	<p>{{ out.output }}</p>
 {% endif %}
 {% endfor %}

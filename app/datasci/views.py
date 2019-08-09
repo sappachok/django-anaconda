@@ -2,13 +2,20 @@ import os
 from django.shortcuts import render
 # from django.views.generic import TemplateView
 from django.views.generic.base import TemplateView
+
+from django.core.management.base import BaseCommand
+from subprocess import Popen
+from sys import stdout, stdin, stderr
+import time, os, signal
+from subprocess import Popen, PIPE, STDOUT, check_output
+
 import requests
 import sys
 from subprocess import run,PIPE
 import io
 import urllib, base64
 import json
-# from StringIO import StringIO
+from django.http import JsonResponse
 
 import random
 import pandas as pd
@@ -24,9 +31,55 @@ app_dir = os.path.abspath(os.path.dirname(__file__))
 
 # Create your views here.
 def datasci(request):
-    db_output = connectdb()
+    # db_output = connectdb()
+    db_output = []
+    test = Command(["python", os.path.join(app_dir, "my.py")])
+    db_output.append(test)
+    # command = "print('test')"
+    # process = Popen(command, stdout=PIPE, stderr=STDOUT)
+    # db_output.append(process.stdout.read())
     data = {'blog_title': 'Datasci App', 'output' : db_output}
     return render(request, 'view-data.html', data)
+
+def Command(cmd):
+    command = cmd
+    try:
+        process = Popen(command, stdout=PIPE, stderr=STDOUT, encoding="utf-8")
+        output = process.stdout.read()
+        exitstatus = process.poll()
+
+        if (exitstatus == 0):
+            return {"status": "Success", "output": output}
+        else:
+            return {"status": "Failed", "output": output}
+    except Exception as e:
+        return {"status": "failed", "output": str(e)}
+
+'''
+class Command(BaseCommand):
+    help = 'Run all commands'
+    commands = [
+        'python test.py',
+        'python test.py',
+    ]
+    output_list = []
+
+    def handle(self, *args, **options):
+        proc_list = []
+        output_list = []
+
+        for command in self.commands:
+            proc = Popen(command, shell=True, stdin=stdin, stdout=stdout, stderr=stderr)
+            proc_list.append(proc)
+            self.output_list.append(proc.stdout.decode('utf-8'))
+
+        try:
+            while True:
+                time.sleep(10)
+        except KeyboardInterrupt:
+            for proc in proc_list:
+                os.kill(proc.pid, signal.SIGKILL)
+'''
 
 def connectdb():
     arr_output = []
