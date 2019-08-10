@@ -3,13 +3,39 @@ import io
 import urllib, base64
 import psycopg2
 import json
+from django.utils.safestring import mark_safe
+from django.utils.encoding import force_text
+import types
 
 class OutputBuffer:
     def __init__(self):
         self.output_list = []
 
-    def setval(self, content_type, val):
+    def setval(self, content_type, val, escape=False):
+        if escape==True:
+            val = escape(val)
+
         output = {'type': content_type, 'val': val}
+        self.output_list.append(output)
+
+    def type(self, obj):
+        typename = type(obj).__name__
+        return typename
+
+    def settable(self, tabledata):
+        arr_cols = []
+        for col in tabledata:
+            arr_cols.append(col)
+
+        data = {
+            'cols': arr_cols,
+            'rows': tabledata.values.tolist()
+        }
+        output = {'type': 'tabledata', 'val': data}
+        self.output_list.append(output)
+
+    def error(self, err):
+        output = {'type': 'error', 'val': err}
         self.output_list.append(output)
 
     def setfigure(self, plt):
@@ -21,7 +47,16 @@ class OutputBuffer:
         output = 'data:image/png;base64,' + urllib.parse.quote(string)
         self.setval("image", output)
 
+    def vardump(self, obj):
+        val = []
+        for ind in obj:
+            val.append(ind)
+
+        output = {'type': 'object', 'val': val}
+        self.output_list.append(output)
+
     def val(self):
+        print("### OUTPUT ###")
         print(json.dumps(self.output_list))
 
 class loader:
@@ -61,13 +96,34 @@ class loader:
         except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL : {0}" + format(error))
 
+def print_figure(plt):
+    fig = plt.gcf()
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    string = base64.b64encode(buf.read())
+    print('<img src="data:image/png;base64,' + urllib.parse.quote(string) + '"')
+
+def escape(html):
+    """Returns the given HTML with ampersands, quotes and carets encoded."""
+    return mark_safe(force_text(html).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;'))
+
+def gettype(obj):
+    typename = type(obj).__name__
+    return typename
+
+def print_escape(str):
+    print(escape(str))
+
 pid = sys.argv[1]
 python = loader()
 tmp = python.get_script(pid)
 op = OutputBuffer()
-exec(tmp)
-op.val()
-#script.dbversion()
-#res = connectdb()
-#print(res)
 
+print_escape(types)
+try:
+    exec(tmp)
+except Exception as e:
+    print(str(e))
+
+op.val()

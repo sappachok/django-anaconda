@@ -1,31 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Datasci Project</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-</head>
-<body>
+{% load theme_tags %}
+{% load html_escape %}
+
+{% header %}
 <div class="jumbotron">
+<div class="container">
   <h1>{{ project_info.1 }}</h1> 
   <p>{{ project_info.2 }}</p> 
 </div>
+</div>
 <div class="container">
+	{% if error %}
+		<p class="alert alert-danger">{{ error|safe }}</p>
+	{% endif %}
+
+	{% if output_print %}
+		<p class="alert alert-info">{{ output_print|nlbr|safe }}</p>
+	{% endif %}
+
 	{% for out in output_list %}
 	{% if out.type == "header" %}
 		<h2>{{ out.val }}</h2>
 	{% elif out.type == "text" %}
-		<p>{{ out.val }}</p>
+		<p>{{ out.val|safe }}</p>
+	{% elif out.type == "code" %}
+		<pre>{{ out.val }}</pre>
+	{% elif out.type == "block" %}
+		<p class="alert alert-secondary">{{ out.val|safe }}</p>
+	{% elif out.type == "block-shadow" %}
+		<p class="shadow p-3 mb-5 rounded">{{ out.val|safe }}</p>
+	{% elif out.type == "tabledata" %}
+		<table class='table'>
+		<thead>
+		{% for th in out.val.cols %}
+			<th>{{ th }}</th>
+		{% endfor %}
+		</thead>
+		<tbody>
+		{% for tr in out.val.rows %}
+			<tr>
+			{% for td in tr %}
+				<td>{{ td }}</td>
+			{% endfor %}
+			</tr>
+		{% endfor %}
+		</tbody>
+		</table>
+	{% elif out.type == "object" %}
+		<table>
+		<thead>
+		{% for row in out.val %}
+			<th>{{ row }}</th>
+		{% endfor %}
+		</thead>
+		</table>
+		<pre>{{ out.val }}</pre>
 	{% elif out.type == "image" %}
 		<img src="{{ out.val }}" />
+	{% elif out.type == "error" %}
+		<p class="alert alert-warning">{{ out.val }}</p>
+	{% elif out.type == "proc-error" %}
+		<p class="alert alert-danger">{{ out.val }}</p>
 	{% else %}
-		{{ out.type }}
+		{{ out }}
 	{% endif %}
 	{% endfor %}
 </div>
-</body>
-</html>
+{% footer %}
