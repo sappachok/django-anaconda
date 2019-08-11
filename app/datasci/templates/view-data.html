@@ -2,13 +2,10 @@
 {% load html_escape %}
 
 {% header %}
-<div class="jumbotron">
-<div class="container">
+<div class="box box-primary">
+  <div class="box-body">
   <h1>{{ project_info.1 }}</h1> 
   <p>{{ project_info.2 }}</p> 
-</div>
-</div>
-<div class="container">
 	{% if error %}
 		<p class="alert alert-danger">{{ error|safe }}</p>
 	{% endif %}
@@ -55,7 +52,7 @@
 		</table>
 		<pre>{{ out.val }}</pre>
 	{% elif out.type == "image" %}
-		<img src="{{ out.val }}" />
+		<img src="{{ out.val }}" class="img-responsive"/>
 	{% elif out.type == "error" %}
 		<p class="alert alert-warning">{{ out.val }}</p>
 	{% elif out.type == "proc-error" %}
@@ -64,5 +61,6 @@
 		{{ out }}
 	{% endif %}
 	{% endfor %}
+</div>
 </div>
 {% footer %}
