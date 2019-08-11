@@ -120,7 +120,6 @@ python = loader()
 tmp = python.get_script(pid)
 op = OutputBuffer()
 
-print_escape(types)
 try:
     exec(tmp)
 except Exception as e:
