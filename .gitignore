@@ -15,7 +15,3 @@ local_settings.py
 
 #django-datasci
 /app/datasci/datasets/*
-
-
-# Except
-!/app/datasci/datasets/
