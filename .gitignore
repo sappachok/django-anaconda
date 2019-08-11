@@ -14,4 +14,8 @@ django.env
 local_settings.py
 
 #django-datasci
-/app/datasci/datasets
+/app/datasci/datasets/
+
+
+# Except
+!/app/datasci/datasets/
