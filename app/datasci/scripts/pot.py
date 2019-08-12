@@ -8,12 +8,6 @@ sns.set()
 # Set context to `"paper"`
 sns.set_context("paper")
 
-print("xxx")
+# print("xxx")
 # Load iris data
 iris = sns.load_dataset("iris")
-
-# Construct iris plot
-sns.swarmplot(x="species", y="petal_length", data=iris)
-
-# Show plot
-print_figure(plt)

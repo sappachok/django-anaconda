@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'djangocodemirror',
     'codemirror',
     'datasci',
+    #'django_extensions',
+    #'django_shell_ipynb',
 ]
 
 MIDDLEWARE = [
