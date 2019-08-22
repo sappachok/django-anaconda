@@ -3,7 +3,9 @@ from smartcv.src import showvideo
 from django.http import HttpResponse,StreamingHttpResponse
 import cv2
 from smartcv.src.kalman_multi import KalmanFilter_cv
+from smartcv.src.util import get_midpoint, get_distance, bb_intersection_over_union, displacement
 import time
+import numpy as np
 
 DISTANCE_THRESHOLD = 500 # max distance to satisfy tracker update
 IOU_THRESHOLD = 0.09 # min IOU between detected and predicted point
@@ -58,24 +60,18 @@ class VideoCamera(object):
         image = frame.copy()
         
         if ret:
-            # frame = cv2.resize(frame, (640, 360))
-            # faces = face_cascade.detectMultiScale(frame, 1.3, 5)
-
             frame = cv2.resize(frame, (640, 360))
             faces = face_cascade.detectMultiScale(frame, 1.3, 5)
             tracker.update(faces)
-            # tracker.check()
-            # ids, points = tracker.get_coordinates()
+            tracker.check()
+            ids, points = tracker.get_coordinates()
             
             for (x, y, w, h) in faces:
                 image = cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            '''    
-            for idx, (x, y, w, h) in enumerate(points):
-                frame = cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-                cv2.putText(frame, str(ids[idx]), (x+10, y+15), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 0, 0), 2)
-            cv2.imshow("Frame", frame)
-            '''
             
+            for idx, (x, y, w, h) in enumerate(points):
+                image = cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                cv2.putText(image, str(ids[idx]), (x+10, y+15), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 0, 0), 2)
         
         cv2.putText(image, "Time: {0}".format(diff), (20, 20), font, 0.6, color, thickness=2)        
         ret,jpeg = cv2.imencode('.jpg',image)
@@ -154,17 +150,12 @@ class FaceTracker(object):
                     scores.append(1000)
                 else:
                     pred_coord = face.tracker.predict()
-                    a = bb_intersection_over_union(point, pred_coord)
-                    '''
                     if bb_intersection_over_union(point, pred_coord) >= IOU_THRESHOLD:
-                        pass
-                        # pred_mid = get_midpoint(pred_coord)
-                        #det_mid = get_midpoint(point)
-                        #scores.append(get_distance(pred_mid, det_mid))
+                        pred_mid = get_midpoint(pred_coord)
+                        det_mid = get_midpoint(point)
+                        scores.append(get_distance(pred_mid, det_mid))
                     else:
-                        pass
-                        #scores.append(1000)
-                    '''
+                        scores.append(1000)
                                     
             closest_point = np.amin(scores) if scores else 1000
             
@@ -201,26 +192,3 @@ class FaceTracker(object):
             ids.append(face.id)
             points.append(face.get_coordinate())
         return ids, points
-
-def kalman():
-    face_cascade = cv2.CascadeClassifier(CASCADE)
-    reader = cv2.VideoCapture(0)
-    tracker = FaceTracker()
-    while True:
-        ret, frame = reader.read()
-        if ret:
-            frame = cv2.resize(frame, (640, 360))
-            faces = face_cascade.detectMultiScale(frame, 1.3, 5)
-            tracker.update(faces)
-            tracker.check()
-            ids, points = tracker.get_coordinates()
-            for (x, y, w, h) in faces:
-                frame = cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            for idx, (x, y, w, h) in enumerate(points):
-                frame = cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-                cv2.putText(frame, str(ids[idx]), (x+10, y+15), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 0, 0), 2)
-            cv2.imshow("Frame", frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-    reader.release()
-    cv2.destroyAllWindows()

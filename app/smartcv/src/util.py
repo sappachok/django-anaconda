@@ -18,10 +18,6 @@ def get_distance(p1, p2):
 
 def bb_intersection_over_union(boxA, boxB):
 	# determine the (x, y)-coordinates of the intersection rectangle
-	return 0.01
-
-def bb_intersection_over_union_backup(boxA, boxB):
-	# determine the (x, y)-coordinates of the intersection rectangle
     
 	xA = max(boxA[0], boxB[0])
 	yA = max(boxA[1], boxB[1])
