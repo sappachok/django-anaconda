@@ -16,4 +16,3 @@ nltk
 xlrd
 opencv-python
 imutils
-util
