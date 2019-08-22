@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'djangocodemirror',
     'codemirror',
     'datasci',
+    'smartcv',
     #'django_extensions',
     #'django_shell_ipynb',
 ]

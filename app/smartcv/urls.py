@@ -7,4 +7,5 @@ from django.views.generic.base import TemplateView
 urlpatterns = [
     path('/', views.smartcv, name='smartcv'),
     path('/show/', views.show, name='show'),
+    path('/kalman-show/', views.kalman_show, name='kalman-show'),
 ]

@@ -24,4 +24,5 @@ urlpatterns = [
     path('hello', include('hello_world.urls')),
     path('editor', include('editor.urls')),
     path('datasci', include('datasci.urls')),
+    path('smartcv', include('smartcv.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

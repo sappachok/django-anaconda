@@ -41,7 +41,7 @@ def show():
 
         # To stop duplicate images
         #currentFrame += 1
-        #time.sleep(100)
+        time.sleep(2000)
 
     # When everything done, release the capture
     cap.release()
