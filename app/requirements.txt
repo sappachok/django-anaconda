@@ -3,6 +3,7 @@ gunicorn==19.9.0
 pytz==2019.1
 djangocodemirror
 django-codemirror-widget
+django-chartjs
 psycopg2
 requests
 subprocess.run
