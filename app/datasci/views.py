@@ -139,25 +139,44 @@ def chartjs(request):
     data = {'blog_title': 'Datasci App'}
     # pretty_data = db_output
     # return HttpResponse(pretty_data, content_type="application/json")         
-    data = {'line_chart_json': line_chart_json}
     return render(request, 'chartjs.html', data)
 
-def line_chart_json(request):
-    line_chart_json = LineChartJSONView.as_view()
-    #return line_chart_json.render(request)
+def chart_data(request):
+    data = {
+        'type': 'bar',
+        'data': {
+            'labels': ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            'datasets': [{
+                'label': '# of Votes',
+                'data': [12, 19, 3, 5, 2, 3],
+                'backgroundColor': [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                'borderColor': [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                'borderWidth': 1
+            }]
+        },
+        'options': {
+            'scales': {
+                'yAxes': [{
+                    'ticks': {
+                        'beginAtZero': True
+                    }
+                }]
+            }
+        }
+    }
 
-class LineChartJSONView(BaseLineChartView):
-    def get_labels(self):
-        """Return 7 labels for the x-axis."""
-        return ["January", "February", "March", "April", "May", "June", "July"]
-
-    def get_providers(self):
-        """Return names of datasets."""
-        return ["Central", "Eastside", "Westside"]
-
-    def get_data(self):
-        """Return 3 datasets to plot."""
-
-        return [[75, 44, 92, 11, 44, 95, 35],
-                [41, 92, 18, 3, 73, 87, 92],
-                [87, 21, 94, 3, 90, 13, 65]]
+    return JsonResponse(data)    
