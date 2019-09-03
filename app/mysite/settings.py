@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'codemirror',
     'datasci',
     'smartcv',
+    'chartjs',
     #'django_extensions',
     #'django_shell_ipynb',
 ]

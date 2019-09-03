@@ -19,6 +19,8 @@ class VideoCamera(object):
         # self.video = cv2.VideoCapture(0)
         # self.video = cv2.VideoCapture('smartcv/src/test.mp4')
         self.video = cv2.VideoCapture('smartcv/src/street-music.mp4')
+        # self.video = cv2.VideoCapture('http://192.168.12.7/mjpg/video.mjpg')
+	
         self.start = time.time()
         self.tracker = FaceTracker()
         self.cascade = cv2.CascadeClassifier(CASCADE)

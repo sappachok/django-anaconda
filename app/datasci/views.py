@@ -2,7 +2,9 @@ import os
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from django.core.management.base import BaseCommand
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+
+from chartjs.views.lines import BaseLineChartView
 
 from sys import stdout, stdin, stderr
 from subprocess import Popen, PIPE, STDOUT, check_output
@@ -132,3 +134,30 @@ def connectdb():
 
 class SampleView(TemplateView):
     template_name = 'about.html'
+
+def chartjs(request):
+    data = {'blog_title': 'Datasci App'}
+    # pretty_data = db_output
+    # return HttpResponse(pretty_data, content_type="application/json")         
+    data = {'line_chart_json': line_chart_json}
+    return render(request, 'chartjs.html', data)
+
+def line_chart_json(request):
+    line_chart_json = LineChartJSONView.as_view()
+    #return line_chart_json.render(request)
+
+class LineChartJSONView(BaseLineChartView):
+    def get_labels(self):
+        """Return 7 labels for the x-axis."""
+        return ["January", "February", "March", "April", "May", "June", "July"]
+
+    def get_providers(self):
+        """Return names of datasets."""
+        return ["Central", "Eastside", "Westside"]
+
+    def get_data(self):
+        """Return 3 datasets to plot."""
+
+        return [[75, 44, 92, 11, 44, 95, 35],
+                [41, 92, 18, 3, 73, 87, 92],
+                [87, 21, 94, 3, 90, 13, 65]]
