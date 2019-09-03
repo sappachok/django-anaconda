@@ -118,11 +118,11 @@ def print_escape(str):
 pid = sys.argv[1]
 python = loader()
 tmp = python.get_script(pid)
-op = OutputBuffer()
+ob = OutputBuffer()
 
 try:
     exec(tmp)
 except Exception as e:
     print(str(e))
 
-op.val()
+ob.val()
