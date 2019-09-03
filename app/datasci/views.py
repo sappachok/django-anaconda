@@ -179,4 +179,7 @@ def chart_data(request):
         }
     }
 
-    return JsonResponse(data)    
+    return JsonResponse(data)
+
+def chart_data_2(request):
+    return True
