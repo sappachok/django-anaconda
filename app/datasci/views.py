@@ -16,7 +16,8 @@ from html.parser import HTMLParser
 import psycopg2
 
 from io import StringIO
-# from shelljob import proc
+import time
+from datasci.src import multicommand
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -144,38 +145,51 @@ def pythoneditor(request):
     return render(request, 'python-editor.html', data)
 
 def editor_process(request):
-    '''
-    #command = request.POST.get("command")
-    if command:
-        try:
-            data = check_output(command, shell=True, stderr=STDOUT)
-        except CalledProcessError as e:
-            data = e.output
-
-        data = data.decode('utf-8')
-        output = "%c(@olive)%" + data + "%c()"
-    else:
-        output = "%c(@orange)%Try `ls` to start with.%c()"
-    '''
+    cmd = request.POST.get("command")
+    commands = prepaire_command(cmd,'#')
     output = []
-    proc = Popen(['python', '-i'],
-                            stdin=PIPE,
-                            stdout=PIPE,
-                            stderr=PIPE)
+    
+    proc = Popen(['python3', '-i'],
+                    stdin=PIPE, 
+                    stdout=PIPE, 
+                    stderr=PIPE)
 
     # To avoid deadlocks: careful to: add \n to output, flush output, use
     # readline() rather than read()
-    commands = ['2+2\n','len("foobar")']
+    # commands = ['2+2\n','c=4\nlen("foobar")\n','a=1\nb=3\na+b+c\n']
+    # commands = multicommand.get_commands()
     for cmd in commands:
-        proc.stdin.write(cmd.encode())
-        proc.stdin.flush()
-        output.append(proc.stdout.readline())
+        if cmd :
+            try :
+                tmp = '{0}\n'.format(cmd)
+                proc.stdin.write(tmp.encode())
+                proc.stdin.flush()
+                out, error = proc.communicate()
+                # output.append(proc.stdout.readline())
+                output.append(out.splitlines())
+            except Exception as e:
+                output.append("Error : {0}".format(e))
+        else :
+            pass
+        # output.append(tmp)
+
 
     proc.stdin.close()
     proc.terminate()
-
+    proc.wait(timeout=0.2)
+    
+    # output = cmd
+    # output.append(cmd)
     return HttpResponse(output)
-    #return HttpResponse(output)
+    # return HttpResponse(output)
+
+def prepaire_command(cmd, sp='\r\n'):
+    command_list = cmd.split(sp)
+    data = []
+    for c in command_list:
+        data.append(c)
+
+    return data
 
 def chartjs(request):
     data = {'blog_title': 'Datasci App'}
