@@ -3,16 +3,20 @@ from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from django.core.management.base import BaseCommand
 from django.http import HttpResponse, JsonResponse
+from django.template import RequestContext
 
 from chartjs.views.lines import BaseLineChartView
 
 from sys import stdout, stdin, stderr
-from subprocess import Popen, PIPE, STDOUT, check_output
+from subprocess import Popen, PIPE, STDOUT, check_output, CalledProcessError
 
 import requests
 import json
 from html.parser import HTMLParser
 import psycopg2
+
+from io import StringIO
+# from shelljob import proc
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -134,6 +138,44 @@ def connectdb():
 
 class SampleView(TemplateView):
     template_name = 'about.html'
+
+def pythoneditor(request):
+    data = {'blog_title': 'Python Editor'}
+    return render(request, 'python-editor.html', data)
+
+def editor_process(request):
+    '''
+    #command = request.POST.get("command")
+    if command:
+        try:
+            data = check_output(command, shell=True, stderr=STDOUT)
+        except CalledProcessError as e:
+            data = e.output
+
+        data = data.decode('utf-8')
+        output = "%c(@olive)%" + data + "%c()"
+    else:
+        output = "%c(@orange)%Try `ls` to start with.%c()"
+    '''
+    output = []
+    proc = Popen(['python', '-i'],
+                            stdin=PIPE,
+                            stdout=PIPE,
+                            stderr=PIPE)
+
+    # To avoid deadlocks: careful to: add \n to output, flush output, use
+    # readline() rather than read()
+    commands = ['2+2\n','len("foobar")']
+    for cmd in commands:
+        proc.stdin.write(cmd.encode())
+        proc.stdin.flush()
+        output.append(proc.stdout.readline())
+
+    proc.stdin.close()
+    proc.terminate()
+
+    return HttpResponse(output)
+    #return HttpResponse(output)
 
 def chartjs(request):
     data = {'blog_title': 'Datasci App'}

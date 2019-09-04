@@ -18,6 +18,10 @@ DOCKER = True
 
 ALLOWED_HOSTS = ['*']
 
+SECURE_CONSOLE = True  # False to allow http
+CONSOLE_WHITELIST = [
+                "127.0.0.1"
+]  # List of IPs to be allowed - NB: All allowed by default
 
 # Application definition
 
@@ -35,11 +39,13 @@ INSTALLED_APPS = [
     'datasci',
     'smartcv',
     'chartjs',
+    
     #'django_extensions',
     #'django_shell_ipynb',
 ]
 
 MIDDLEWARE = [
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
