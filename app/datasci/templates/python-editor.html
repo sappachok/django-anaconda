@@ -61,7 +61,6 @@
                                         //console.log(val);
                                     });
 
-                                    result.html("<div class='alert alert-info'>" + result.html() + "</div>");
                                 }
                             });
                         } catch(e) {
@@ -70,6 +69,12 @@
 
                         return false;
                     });
+					
+					$('.inp-command').keydown(function (e) {
+						if (e.ctrlKey && e.keyCode == 13) {
+							$('#form1').submit();
+						}
+					});
                 });
             </script>
             {% endblock %}
@@ -77,13 +82,22 @@
             {% url "editor-process" %}
             <form id="form1" action='{% url "editor-process" %}' method="post">
                 <p>
-                    <textarea name="command" class="form-control" rows=10>{{ project_info.3 }}</textarea>
+                    <textarea name="command[0]" class="form-control inp-command" rows=10>{{ project_info.3 }}</textarea>
+					<textarea name="command[1]" class="form-control inp-command" rows=10></textarea>
                 </p>
                 <button type="submit" class="btn btn-primaray">Sign up</button>
             </form>
-            <p>
-                <div id="result"></div>
-            </p>
+			<br>
+			<div class="box box-primary">
+				<div class="box-header with-border">
+				  <h3 class="box-title">Result</h3>
+				</div>
+				<div class="box-body">
+              		<p>
+						<div id="result"></div>
+					</p>
+				</div>
+			</div>
             {% endblock %}
 
         </div>

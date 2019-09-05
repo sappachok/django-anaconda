@@ -145,49 +145,60 @@ def editor(request, pid=""):
     data = {'blog_title': 'Python Editor', 'project_info': project_info}
     return render(request, 'python-editor.html', data)
 
-def editor_process(request):
-    cmd = request.POST.get("command")
-    commands = prepaire_command(cmd,'#')
-    output = []
-    
-    proc = Popen(['python3', '-i'],
-                    stdin=PIPE, 
-                    stdout=PIPE, 
-                    stderr=PIPE)
-
-    # To avoid deadlocks: careful to: add \n to output, flush output, use
-    # readline() rather than read()
-    # commands = ['2+2\n','c=4\nlen("foobar")\n','a=1\nb=3\na+b+c\n']
-    # commands = multicommand.get_commands()
+def run_command(proc, commands):
     for cmd in commands:
         if cmd :
             try :
                 tmp = '{0}\n'.format(cmd)
                 proc.stdin.write(tmp.encode())
                 proc.stdin.flush()
-                out, error = proc.communicate()
-                # output.append(proc.stdout.readline())
-                output.append(out.decode("utf-8").splitlines())
             except Exception as e:
-                output.append("Error : {0}".format(e))
+                return "Error : {0}".format(e)
         else :
             pass
-        # output.append(tmp)
+    return proc
+    
+def editor_process(request):
+    cmd = request.POST.get("command[0]")
+    commands = prepaire_command(cmd)
+    
+    cmd2 = request.POST.get("command[1]")
+    commands2 = prepaire_command(cmd2)
+    
+    output = []
+    
+    proc = Popen(['python3', '-i'],
+                    stdin=PIPE, 
+                    stdout=PIPE, 
+                    stderr=PIPE
+                    )
 
-
+    # To avoid deadlocks: careful to: add \n to output, flush output, use
+    # readline() rather than read()
+    # commands = ['2+2\n','len("foobar")\n','print("test")\r\nprint("abc")\n']
+    # commands = multicommand.get_commands()
+    
+    proc = run_command(proc, commands)
+    out, error = proc.communicate()
+    output.append("start")
+    output.append(out.decode("utf-8").splitlines())
+    output.append("end")
+    proc.wait()
+    '''
+    proc = run_command(proc, commands2)
+    out, error = proc.communicate()    
+    output.append("start")
+    output.append(out.decode("utf-8").splitlines())
+    output.append("end")
+    '''
     proc.stdin.close()
     proc.terminate()
     proc.wait(timeout=0.2)
-    
-    # output = cmd
-    # output.append(cmd)
-    # return HttpResponse(output)
-       
-    # data_output = output.decode('utf-8')
-    # return JsonResponse(output)
-    # json_output = json.dumps(output)
-    # return JsonResponse({json_output})
+    # output.append(commands)
+    # return HttpResponse(json.dumps(output), content_type="application/json")
+    # output = [1,2,3,4,5]
     return HttpResponse(json.dumps(output), content_type="application/json")
+    # return HttpResponse(output)
 
 def prepaire_command(cmd, sp='\r\n'):
     command_list = cmd.split(sp)
