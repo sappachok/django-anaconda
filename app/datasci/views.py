@@ -64,7 +64,7 @@ def project(request, pid):
 def get_project_info(pid):
     try:
         cursor = connection.cursor()
-        select = """SELECT name, title, description FROM editor_pythonlab WHERE name='{0}'""".format(pid)
+        select = """SELECT name, title, description, script FROM editor_pythonlab WHERE name='{0}'""".format(pid)
         cursor.execute(select)
         record = cursor.fetchone()
         return record
@@ -140,8 +140,9 @@ def connectdb():
 class SampleView(TemplateView):
     template_name = 'about.html'
 
-def pythoneditor(request):
-    data = {'blog_title': 'Python Editor'}
+def editor(request, pid=""):
+    project_info = get_project_info(pid)
+    data = {'blog_title': 'Python Editor', 'project_info': project_info}
     return render(request, 'python-editor.html', data)
 
 def editor_process(request):
@@ -166,7 +167,7 @@ def editor_process(request):
                 proc.stdin.flush()
                 out, error = proc.communicate()
                 # output.append(proc.stdout.readline())
-                output.append(out.splitlines())
+                output.append(out.decode("utf-8").splitlines())
             except Exception as e:
                 output.append("Error : {0}".format(e))
         else :
@@ -180,8 +181,13 @@ def editor_process(request):
     
     # output = cmd
     # output.append(cmd)
-    return HttpResponse(output)
     # return HttpResponse(output)
+       
+    # data_output = output.decode('utf-8')
+    # return JsonResponse(output)
+    # json_output = json.dumps(output)
+    # return JsonResponse({json_output})
+    return HttpResponse(json.dumps(output), content_type="application/json")
 
 def prepaire_command(cmd, sp='\r\n'):
     command_list = cmd.split(sp)

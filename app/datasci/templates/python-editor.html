@@ -54,6 +54,14 @@
                                 success: function(response) { // on success..
                                     //$('#DIV_CONTAINING_FORM').html(response); // update the DIV 
                                     console.log(response);
+                                    var result = $('#result');
+                                    result.html("");
+                                    $.each(response[0], function(i, val) {
+                                        result.append("<div>" + val + "</div>");
+                                        //console.log(val);
+                                    });
+
+                                    result.html("<div class='alert alert-info'>" + result.html() + "</div>");
                                 }
                             });
                         } catch(e) {
@@ -66,13 +74,16 @@
             </script>
             {% endblock %}
             {% block content %}
-            <form id="form1" action='{% url "pythoneditor-process" %}' method="post">
+            {% url "editor-process" %}
+            <form id="form1" action='{% url "editor-process" %}' method="post">
                 <p>
-                    <textarea name="command" class="form-control" rows=10></textarea>
+                    <textarea name="command" class="form-control" rows=10>{{ project_info.3 }}</textarea>
                 </p>
                 <button type="submit" class="btn btn-primaray">Sign up</button>
             </form>
-            <div id="result"></div>
+            <p>
+                <div id="result"></div>
+            </p>
             {% endblock %}
 
         </div>
