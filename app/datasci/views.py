@@ -17,7 +17,7 @@ import psycopg2
 
 from io import StringIO
 import time
-from datasci.src import multicommand
+from datasci.src import multicommand, clientsocket
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -207,6 +207,16 @@ def prepaire_command(cmd, sp='\r\n'):
         data.append(c)
 
     return data
+
+def client_socket(request):
+    command = ['python3', os.path.join(app_dir, 'client.py')]
+    process = Popen(command, stdout=PIPE, stderr=STDOUT, encoding="utf-8")
+    tmp = process.stdout.read()
+    '''
+    clientsocket.connect()
+    return HttpResponse("Hello Server")
+    '''
+    return HttpResponse(tmp)
 
 def chartjs(request):
     data = {'blog_title': 'Datasci App'}

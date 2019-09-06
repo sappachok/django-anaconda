@@ -13,4 +13,6 @@ urlpatterns = [
     path('/chartjs/', views.chartjs, name='chartjs'),
     path('/chartjs/api/', views.chart_data, name='chartjs-chart_data'),
     path('/about/', SampleView.as_view(), name='about'),
+    path('/client/', views.client_socket, name='client'),
+    
 ]
