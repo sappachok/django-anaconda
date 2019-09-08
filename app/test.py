@@ -6,17 +6,8 @@ import fcntl
 import asyncio
 import io
 import threading
-'''
-proc = Popen(['python3', '-i'],
-	    stdin=PIPE, 
-	    stdout=PIPE, 
-	    stderr=PIPE
-	    )
-'''
 
 data = []
-
-# fcntl.fcntl(proc.stdout.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
 
 def reader(command_list, pipe):
     for f in command_list:
@@ -28,7 +19,7 @@ def reader(command_list, pipe):
         
 proc = Popen(['python3', '-i'], stdin=PIPE, stdout=PIPE)
 
-commands = ['1+1\n','2+2\n','print("hello")\n','import json\n']
+commands = ['1+1\n','2+2\n','print("hello")\n','import json\n','a=1\n','b=2\n','c=a+b\n','print(c)\n','d=[1,2,3,4]\n','e=json.dumps(d)\n','e']
 
 threads = []
 threads.append(threading.Thread(target = reader, args=(commands,proc,)))
@@ -36,25 +27,7 @@ threads.append(threading.Thread(target = reader, args=(commands,proc,)))
 for t in threads:
     t.start()
 
-'''        
-def push_command(cmd):
-    try:
-        line_cmd = cmd # '{}\r\nprint("############")\r\n'.format(cmd)
-        proc.stdin.write(line_cmd.encode())
-        proc.stdin.flush()        
-        line = proc.stdout.readline()
-        return line
-    except Exception as e:
-        return e
-
-commands = ['1+1\n','2+2\n','print("hello")\n']
-
-for c in commands:
-    res = push_command(c)
-    data.append(res)
-print(data)
-'''
-print(proc.stdout.read())
+print(proc.stdout.read().splitlines())
 
 print('joining ..')
 while threading.active_count() > 1:
