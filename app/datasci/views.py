@@ -1,4 +1,5 @@
 import os
+import signal
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from django.core.management.base import BaseCommand
@@ -18,6 +19,11 @@ import psycopg2
 from io import StringIO
 import time
 from datasci.src import multicommand, clientsocket
+from datasci.nbstreamreader import NonBlockingStreamReader as NBSR
+
+import fcntl
+import select
+import time
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -157,6 +163,10 @@ def run_command(proc, commands):
         else :
             pass
     return proc
+
+def kill_process(request, pid):
+    os.kill(pid, signal.SIGTERM)
+    return HttpResponse("Kill Process {}".format(pid))
     
 def editor_process(request):
     cmd = request.POST.get("command[0]")
@@ -209,15 +219,40 @@ def prepaire_command(cmd, sp='\r\n'):
     return data
 
 def client_socket(request):
+    '''
     command = ['python3', os.path.join(app_dir, 'client.py')]
     process = Popen(command, stdout=PIPE, stderr=STDOUT, encoding="utf-8")
     tmp = process.stdout.read()
     '''
+    '''
     clientsocket.connect()
     return HttpResponse("Hello Server")
     '''
-    return HttpResponse(tmp)
-
+    data = []
+    try :
+        data = clientsocket.test_command()
+    except:
+        data.append("Error")
+    
+    # data.append(proc.stdout.readline())
+    
+    return HttpResponse(data)
+    
+def enqueue_output(out, queue):
+      for line in iter(out.readline, b''):
+            queue.put(line)
+            out.close()
+            
+def non_block_read(output):
+    ''' even in a thread, a normal read with block until the buffer is full '''
+    fd = output.fileno()
+    fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+    fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+    try:
+        return output.read()
+    except:
+        return ''
+        
 def chartjs(request):
     data = {'blog_title': 'Datasci App'}
     # pretty_data = db_output

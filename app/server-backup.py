@@ -3,8 +3,6 @@ import os
 import socket                
 from sys import stdout, stdin, stderr
 from subprocess import Popen, PIPE, STDOUT, check_output, CalledProcessError
-import os
-import signal
 
 # next create a socket object 
 s = socket.socket()          
@@ -23,42 +21,43 @@ s.bind(('127.0.0.1', port))
 print("socket binded to %s" %(port) )
 
 # put the socket into listening mode 
-s.listen(5)
+s.listen(5)      
 print("socket is listening")
 
-proc = Popen(['python3', '-i'], stdin=PIPE, stdout=PIPE)
+proc = Popen(['python3', '-i'],
+                stdin=PIPE, 
+                stdout=PIPE,
+                stderr=PIPE
+                )
                 
 # a forever loop until we interrupt it or  
 # an error occurs
 print(os.getpid())
-
-def kill_process()
-    os.kill(pid, signal.SIGTERM)
-
 while True: 
-    # Establish connection with client.
-    c, addr = s.accept()
-    print('Got connection from', addr)
+  
+    # Establish connection with client. 
+    c, addr = s.accept()      
+    print('Got connection from', addr )
 
     data = c.recv(1024)
     if not data:
         break
     else :
         cmd = data
-        
-        if data==b'quit()'
-            c.send(b'Server Close.')
-            kill_process()
-            
         try :
             proc.stdin.write(cmd)
             proc.stdin.flush()
-
+            #print("...")
+            #c.send(cmd)
             print(cmd)
             c.send(proc.stdout.readline())
         except Exception as e:
             print('Error : {0}'.format(e))
 
+ 
+    # c.send(b'Thank you for connecting') 
+
+    # Close the connection with the client 
     c.close()
     
 s.close()

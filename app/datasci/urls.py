@@ -14,5 +14,6 @@ urlpatterns = [
     path('/chartjs/api/', views.chart_data, name='chartjs-chart_data'),
     path('/about/', SampleView.as_view(), name='about'),
     path('/client/', views.client_socket, name='client'),
+    path('/kill_process/<int:pid>/', views.kill_process, name='kill-process'),
     
 ]
