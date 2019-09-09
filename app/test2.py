@@ -1,47 +1,58 @@
-# Import socket module 
-import os
-import socket             
-from subprocess import Popen, PIPE, STDOUT, check_output, CalledProcessError
-import fcntl
-import asyncio
-import io
-import threading
+from subprocess import Popen, PIPE, STDOUT
+import fcntl, os
 import pty
+import time
 
-# master, slave = pty.openpty()
+master, slave = pty.openpty()
+proc = Popen(['python3', '-i'],
+                        stdin=PIPE,
+                        stdout=PIPE,
+                        stderr=PIPE,
+                        bufsize=1,
+                        #universal_newlines=True
+                        )
 
-data = []
+# proc.wait()
+# tokenizer = subprocess.Popen(script, shell=True stdin=subprocess.PIPE, stdout=slave)
+#fcntl.fcntl(proc.stdout.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
+'''
+fd = proc.stdout.fileno()
+fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+'''
+ 
+stdin_handle = proc.stdin
+stdout_handle = os.fdopen(master)
 
-def reader(command_list, pipe_r, pipe_w):  
-    for f in command_list:
-        ln = f
-        if not ln: break
-        pipe_w.write(ln.encode())
-        pipe_w.flush()
-    pipe_w.close()
-    pipe_r.close()
-    output = pipe_r.read().splitlines()
-    # output = []
-    print(output)
+def run_script(cmd, stdin, stdout):
+    stdin.write(cmd)
+    stdin.flush()
+    print(stdout.readline())
+    # p.wait()
+    # print(a)
+    # if not stdout.readline():
+    #    print(stdout.readline())   
+
+def run_script2(cmd, stdin, stdout):
+    stdin.write(cmd)
+    stdin.flush()
+    print(stdout.readline())        
+
+commands = ['2+2\n', 'len("foobar")\n', 'print("Hello")\n', 'a=1\n', 'a']
+
+for cmd in commands:
+    run_script(cmd.encode(), stdin_handle, proc.stdout)
+    # run_script2(cmd.encode(), proc.stdin, proc.stdout)
+    time.sleep(0.1)
+
+# stdin_handle.write(b'import json\n')
+# stdin_handle.flush()
+# print(proc.stdout.readline())
 
 
-out_r, out_w = pty.openpty()
-        
-proc = Popen(['python3', '-i'], stdin=out_w, stdout=out_w)
-
-commands = ['1+1\n','2+2\n','print("hello")\n','import json\n','a=1\n','b=2\n','c=a+b\n','print(c)\n','d=[1,2,3,4]\n','e=json.dumps(d)\n','e\n']
-
-# stdout = os.fdopen(master)
-
-reader(commands, out_r, out_w)
-
-# commands = ['print("hello")']
-# reader(commands, proc)
-
-# print(proc.stdout.read().splitlines())
-# print(proc.stdout.read())
-
-#print(proc.stderr)
-
+'''
+print(proc.stdout.readline())
+'''
+proc.stdin.close()
 proc.terminate()
-proc.wait(timeout=0.1)
+proc.wait(timeout=0.2)

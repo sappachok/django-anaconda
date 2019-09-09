@@ -1,0 +1,51 @@
+{% load theme_tags %}
+{% load html_escape %}
+
+{% header %}
+{% breadcrumb %}
+
+<section class="content">
+	<div class="row">
+		<!-- left column -->
+		<div class="col-sm-12">
+		  <!-- general form elements -->
+
+			<div class="box box-primary">
+			  <div class="box-body">
+			  <h1>{{ project_info.1 }}</h1>
+			  <hr>
+			  <p>{{ project_info.2 }}</p>
+			  <pre>{{ project_info.3 }}</pre>
+			  </div>
+			</div>
+
+			<div class="box box-primary">
+			  <div class="box-body">
+			  <h4>Output:</h4>
+			  {% for out in output %}
+				<p>{{ out|safe }}</p>
+			  {% endfor %}
+			  </div>
+			</div>
+
+			<div class="box box-primary">
+			  <div class="box-body">
+			  <h4>Output:</h4>
+			  {% for out in error %}
+				<p>{{ out|safe }}</p>
+			  {% endfor %}
+			  </div>
+			</div>
+			
+			<div class="box box-primary">
+			  <div class="box-body">
+			  <h4>Script:</h4>
+			  <pre>{{ script }}</pre>
+			  </div>
+			</div>
+		</div>
+	</div>
+	<!-- /.content -->
+</section>
+
+{% footer %}

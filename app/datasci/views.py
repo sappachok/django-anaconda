@@ -18,7 +18,7 @@ import psycopg2
 
 from io import StringIO
 import time
-from datasci.src import multicommand, clientsocket
+from datasci.src import multicommand, clientsocket, run_multiscript
 from datasci.nbstreamreader import NonBlockingStreamReader as NBSR
 
 import fcntl
@@ -66,6 +66,21 @@ def project(request, pid):
     # pretty_data = db_output
     # return HttpResponse(pretty_data, content_type="application/json")
     return render(request, 'view-data.html', data)
+
+def project_ex(request, pid):
+    project_info = get_project_info(pid)
+    project_script = project_info[3]
+    script = project_script.split("\n")
+    
+    cmd = []
+    for sc in script:
+        cmd.append("{}\n".format(sc))
+    cmd.append("quit()\n")
+    # cmd = ['1+1\n','2+2\n','print("hello")\n','a=1\n','b=2\n','a+b\n','import json','d=[1,2,3,4,5]','e=json.dumps(d)\n','e\n','print(g)','print(d)','x=100\n','x++\n','quit()\n']
+    # cmd = ['import matplotlib.pyplot as plt\r\n', 'import seaborn as sns\r\n', 'print("start")\n','quit()\n']
+    output, error = run_multiscript.run(cmd)
+    data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error, 'script': cmd}
+    return render(request, 'view-data-ex.html', data)
 
 def get_project_info(pid):
     try:

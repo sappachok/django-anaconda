@@ -7,7 +7,7 @@ from django.views.generic.base import TemplateView
 
 urlpatterns = [
     path('/', views.datasci, name='datasci'),
-    path('/project/<str:pid>/', views.project, name='project'),
+    path('/project/<str:pid>/', views.project_ex, name='project'),
     path('/editor/<str:pid>/', views.editor, name='editor'),
     path('/editor_process/', views.editor_process, name='editor-process'),
     path('/chartjs/', views.chartjs, name='chartjs'),
