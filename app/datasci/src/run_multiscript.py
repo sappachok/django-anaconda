@@ -1,11 +1,13 @@
 import subprocess
 import sys
 import threading
+import time
 
 # we'll be using a separate thread and a timed event to request the user input
 def print_buffer(timer, wait, buffer_in, buffer_out, buffer_target, buffer_err):
     for cmd in buffer_in:
         print(cmd, file=buffer_target, flush=True)
+        time.sleep(0.2)
 
 def run(commands):
     if not commands:
@@ -43,4 +45,3 @@ def run(commands):
     proc.wait(timeout=0.2)
     
     return (output, error)
-    #print(error)

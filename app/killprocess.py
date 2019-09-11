@@ -5,5 +5,10 @@ import signal
 try:
     pid = int(sys.argv[1])
     os.kill(pid, signal.SIGTERM)
-except Exception as e:
-    print(e)
+    os.waitpid(pid, 0)
+    print(True)
+    exit()
+except OSError:
+    pass
+    print(False)
+    exit()

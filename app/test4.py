@@ -38,6 +38,7 @@ if __name__ == "__main__":  # a guard from unintended usage
     
     print(output)
     print(error)
+    
     proc.stdin.close()
     proc.terminate()
     proc.wait(timeout=0.2)
