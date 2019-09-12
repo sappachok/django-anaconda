@@ -56,10 +56,11 @@
                                     console.log(response);
                                     var result = $('#result');
                                     result.html("");
+									/*
                                     $.each(response[0], function(i, val) {
                                         result.append("<div>" + val + "</div>");
                                         //console.log(val);
-                                    });
+                                    });*/
 
                                 }
                             });
@@ -80,13 +81,13 @@
             {% endblock %}
             {% block content %}
             {% url "editor-process" %}
-            <form id="form1" action='{% url "editor-process" %}' method="post">
+            <form id="form1" action='{% url "get-output" %}' method="post">
                 <p>
-                    <textarea name="command[0]" class="form-control inp-command" rows=10>{{ project_info.3 }}</textarea>
-					<textarea name="command[1]" class="form-control inp-command" rows=10></textarea>
+                    <textarea name="command" class="form-control inp-command" rows=10>{{ project_info.3 }}</textarea>
                 </p>
                 <button type="submit" class="btn btn-primaray">Sign up</button>
             </form>
+			{{ result }}
 			<br>
 			<div class="box box-primary">
 				<div class="box-header with-border">

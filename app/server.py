@@ -2,9 +2,10 @@
 import os
 import socket                
 import sys
-from subprocess import Popen, PIPE, STDOUT, check_output, CalledProcessError
-import os
+from subprocess import Popen, PIPE, STDOUT
 import signal
+import threading
+import time
 
 # next create a socket object 
 class SocketStreamOutput:
@@ -15,7 +16,9 @@ class SocketStreamOutput:
                                 stderr=PIPE,
                                 universal_newlines=True)
         self.output_buffer = sys.stdout  # a buffer to write rasa's output to
+        self.input_buffer = sys.stdin
         self.error_buffer = sys.stderr
+        
     def run_server(self, host, port):
         s = socket.socket()          
         print("Socket successfully created")
@@ -35,27 +38,29 @@ class SocketStreamOutput:
         # put the socket into listening mode 
         s.listen(5)
         print("socket is listening")
+        c, addr = s.accept()
         
-        while True: 
-            c, addr = s.accept()
+        while True:    
             # Establish connection with client.    
             print('Got connection from', addr)
 
             data = c.recv(1024)
             if not data:
-                break
+                pass
             else :
                 cmd = data
-                c.send(b"Hello Client!!")
-                print(data)
+                output = self.run([b'1+1\n', b'2+2\n'])
+                c.send(output)
+                # print(output)
+                # print(cmd)
                 
-            c.close()
+        c.close()
 
     def print_buffer(self, timer, wait, buffer_in, buffer_out, buffer_target, buffer_err):
+        return True
         for cmd in buffer_in:
-            #self.process.stdin.write(cmd.decode("utf-8"))
-            #self.process.stdin.flush()
-            print(cmd.decode("utf-8"), file=buffer_target, flush=True)
+            print(cmd, file=buffer_out, flush=True)
+            print(self.input_buffer.readline(), file=buffer_target, flush=True)
 
     def run(self, commands):
         if not commands:
@@ -68,7 +73,7 @@ class SocketStreamOutput:
         input_thread = threading.Thread(target=self.print_buffer,
                                         args=(timer,  # pass the timer
                                               0.1,  # prompt after one second
-                                              input_buffer, output_buffer, self.process.stdin, self.process.stderr))
+                                              input_buffer, self.output_buffer, self.process.stdin, self.process.stderr))
 
         input_thread.daemon = True  # no need to keep the input thread blocking...
         input_thread.start()  # start the timer thread
@@ -76,21 +81,25 @@ class SocketStreamOutput:
         
         # now we'll read the `rasa` STDOUT line by line, forward it to output_buffer and reset
         '''
-        output = self.output_buffer.read()
-        return output
-        '''
-        '''
         output = []
         for line in self.process.stdout.read():
             output.append(line)
         return output
         '''
         '''
-        error = []
-        for line in self.process.stderr:
-            error.append(line)
+        output = []
+        for line in self.process.stdout:
+            output.append(line)
         '''
-        #return (output, error)
+        
+        output 
+        
+        self.process.stdin.close()
+        self.process.terminate()
+        self.process.wait(timeout=0.2)
+    
+        return b"test"
+
     def finished(self):
         self.socker.close()
 

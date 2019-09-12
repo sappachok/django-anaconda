@@ -31,13 +31,14 @@ def socket_reader(sockobj, outq, exit_event):
             break
     
 def main():   
-    proc = subprocess.Popen(['python3', '-u', 'socket-server-stream.py'])
+    proc = subprocess.Popen(['python3', '-u', 'socket-server.py'])
     time.sleep(0.2)
-    sockobj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sockobj.connect(('localhost', 5000))    
+    
     try:
         while True:
-
+            sockobj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # sockobj.settimeout(0.1)
+            sockobj.connect(('localhost', 5000))
             outq = queue.Queue()
             exit = threading.Event()
             t = threading.Thread(target=socket_reader, args=(sockobj, outq, exit))

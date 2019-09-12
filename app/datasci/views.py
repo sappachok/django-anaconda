@@ -18,8 +18,7 @@ import psycopg2
 
 from io import StringIO
 import time
-from datasci.src import multicommand, clientsocket, run_multiscript
-from datasci.nbstreamreader import NonBlockingStreamReader as NBSR
+from datasci.src import multicommand, clientsocket, run_multiscript, interact_subprocess
 
 import fcntl
 import select
@@ -164,6 +163,7 @@ class SampleView(TemplateView):
 def editor(request, pid=""):
     project_info = get_project_info(pid)
     data = {'blog_title': 'Python Editor', 'project_info': project_info}
+    
     return render(request, 'python-editor.html', data)
 
 def run_command(proc, commands):
@@ -182,48 +182,17 @@ def run_command(proc, commands):
 def kill_process(request, pid):
     os.kill(pid, signal.SIGTERM)
     return HttpResponse("Kill Process {}".format(pid))
+
+def get_interactive_output(request):
+    result = interact_subprocess.run('print("Hello!!")')
+    return HttpResponse(result)
     
 def editor_process(request):
-    cmd = request.POST.get("command[0]")
+    cmd = request.POST.get("command")
     commands = prepaire_command(cmd)
     
-    cmd2 = request.POST.get("command[1]")
-    commands2 = prepaire_command(cmd2)
     
-    output = []
-    
-    proc = Popen(['python3', '-i'],
-                    stdin=PIPE, 
-                    stdout=PIPE, 
-                    stderr=PIPE
-                    )
-
-    # To avoid deadlocks: careful to: add \n to output, flush output, use
-    # readline() rather than read()
-    # commands = ['2+2\n','len("foobar")\n','print("test")\r\nprint("abc")\n']
-    # commands = multicommand.get_commands()
-    
-    proc = run_command(proc, commands)
-    out, error = proc.communicate()
-    output.append("start")
-    output.append(out.decode("utf-8").splitlines())
-    output.append("end")
-    proc.wait()
-    '''
-    proc = run_command(proc, commands2)
-    out, error = proc.communicate()    
-    output.append("start")
-    output.append(out.decode("utf-8").splitlines())
-    output.append("end")
-    '''
-    proc.stdin.close()
-    proc.terminate()
-    proc.wait(timeout=0.2)
-    # output.append(commands)
-    # return HttpResponse(json.dumps(output), content_type="application/json")
-    # output = [1,2,3,4,5]
     return HttpResponse(json.dumps(output), content_type="application/json")
-    # return HttpResponse(output)
 
 def prepaire_command(cmd, sp='\r\n'):
     command_list = cmd.split(sp)
@@ -252,21 +221,6 @@ def client_socket(request):
     # data.append(proc.stdout.readline())
     
     return HttpResponse(data)
-    
-def enqueue_output(out, queue):
-      for line in iter(out.readline, b''):
-            queue.put(line)
-            out.close()
-            
-def non_block_read(output):
-    ''' even in a thread, a normal read with block until the buffer is full '''
-    fd = output.fileno()
-    fl = fcntl.fcntl(fd, fcntl.F_GETFL)
-    fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
-    try:
-        return output.read()
-    except:
-        return ''
         
 def chartjs(request):
     data = {'blog_title': 'Datasci App'}

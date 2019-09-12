@@ -10,6 +10,7 @@ urlpatterns = [
     path('/project/<str:pid>/', views.project_ex, name='project'),
     path('/editor/<str:pid>/', views.editor, name='editor'),
     path('/editor_process/', views.editor_process, name='editor-process'),
+    path('/get-output/', views.get_interactive_output, name='get-output'),
     path('/chartjs/', views.chartjs, name='chartjs'),
     path('/chartjs/api/', views.chart_data, name='chartjs-chart_data'),
     path('/about/', SampleView.as_view(), name='about'),
