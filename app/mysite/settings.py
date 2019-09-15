@@ -39,8 +39,7 @@ INSTALLED_APPS = [
     'datasci',
     'smartcv',
     'chartjs',
-    
-    #'django_extensions',
+    'django_extensions',
     #'django_shell_ipynb',
 ]
 

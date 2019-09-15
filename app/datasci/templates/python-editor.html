@@ -53,14 +53,14 @@
                                 url: $(this).attr('action'), // the file to call
                                 success: function(response) { // on success..
                                     //$('#DIV_CONTAINING_FORM').html(response); // update the DIV 
-                                    console.log(response);
+                                    //console.log(response);
                                     var result = $('#result');
                                     result.html("");
-									/*
+									
                                     $.each(response[0], function(i, val) {
                                         result.append("<div>" + val + "</div>");
                                         //console.log(val);
-                                    });*/
+                                    });
 
                                 }
                             });

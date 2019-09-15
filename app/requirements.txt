@@ -4,8 +4,13 @@ pytz==2019.1
 djangocodemirror
 django-codemirror-widget
 django-chartjs
+ipython
+qtconsole
+ipykernel
+Image
 psycopg2
 requests
+websockets
 subprocess.run
 numpy
 scipy

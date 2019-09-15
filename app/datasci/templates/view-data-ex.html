@@ -1,5 +1,6 @@
 {% load theme_tags %}
 {% load html_escape %}
+{% load view_tags %}
 
 {% header %}
 {% breadcrumb %}
@@ -23,7 +24,7 @@
 			  <div class="box-body">
 			  <h4>Output:</h4>
 			  {% for out in output %}
-				<p>{{ out|safe }}</p>
+				<p><pre>{{ out|safe }}</pre></p>
 			  {% endfor %}
 			  </div>
 			</div>

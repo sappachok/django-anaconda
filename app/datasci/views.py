@@ -74,9 +74,10 @@ def project_ex(request, pid):
     cmd = []
     for sc in script:
         cmd.append("{}\n".format(sc))
+    cmd.append('from datasci.src import util_interactive')
+    cmd.append('util_interactive.printfigs("fig", None, ".png")')
     cmd.append("quit()\n")
-    # cmd = ['1+1\n','2+2\n','print("hello")\n','a=1\n','b=2\n','a+b\n','import json','d=[1,2,3,4,5]','e=json.dumps(d)\n','e\n','print(g)','print(d)','x=100\n','x++\n','quit()\n']
-    # cmd = ['import matplotlib.pyplot as plt\r\n', 'import seaborn as sns\r\n', 'print("start")\n','quit()\n']
+
     output, error = run_multiscript.run(cmd)
     data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error, 'script': cmd}
     return render(request, 'view-data-ex.html', data)
@@ -160,6 +161,12 @@ def connectdb():
 class SampleView(TemplateView):
     template_name = 'about.html'
 
+def websocket_console(request):
+    # project_info = get_project_info(pid)
+    data = {'blog_title': 'Python Editor'}
+    
+    return render(request, 'websocket-console.html', data)
+    
 def editor(request, pid=""):
     project_info = get_project_info(pid)
     data = {'blog_title': 'Python Editor', 'project_info': project_info}

@@ -31,7 +31,7 @@ def socket_reader(sockobj, outq, exit_event):
             break
     
 def main():   
-    proc = subprocess.Popen(['python3', '-u', 'socket-server.py'])
+    proc = subprocess.Popen(['python3', '-u', 'socket-server-stream.py'])
     time.sleep(0.2)
     
     try:
