@@ -38,19 +38,18 @@ def run(commands):
     input_thread.join()
     # now we'll read the `rasa` STDOUT line by line, forward it to output_buffer and reset
     # the timer each time a new line is encountered
-
+    '''
     output = []
     for line in proc.stdout:        
         output.append(line)
     
     print(output)
-
+    '''
     
     error = []
     for line in proc.stderr:
         error.append(line)
 
-    print(output)
     print(error)
     
     proc.stdin.close()

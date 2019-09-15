@@ -27,10 +27,10 @@ import time
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
 connection = psycopg2.connect(user="postgres",
-                                           password="postgres",
-                                           host="db",
-                                           port="5432",
-                                           database="postgres")
+                               password="postgres",
+                               host="db",
+                               port="5432",
+                               database="postgres")
 # python manage.py shell
 # Create your views here.
 def datasci(request):

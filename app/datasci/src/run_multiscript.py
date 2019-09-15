@@ -7,6 +7,8 @@ import time
 def print_buffer(timer, wait, buffer_in, buffer_out, buffer_target, buffer_err):
     for cmd in buffer_in:
         print(cmd, file=buffer_target, flush=True)
+        #print("\r\n\r\n", file=buffer_target, flush=True)
+    time.sleep(0.1)
 
 def run(commands):
     if not commands:
