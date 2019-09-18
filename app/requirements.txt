@@ -5,6 +5,7 @@ djangocodemirror
 django-codemirror-widget
 django-chartjs
 ipython
+PyQt5
 qtconsole
 ipykernel
 Image
