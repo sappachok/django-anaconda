@@ -23,6 +23,7 @@ from datasci.src import multicommand, clientsocket, run_multiscript, interact_su
 import fcntl
 import select
 import time
+from datetime import datetime
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -67,23 +68,25 @@ def project(request, pid):
     return render(request, 'view-data.html', data)
 
 def project_ex(request, pid):
-	project_info = get_project_info(pid)
-	project_script = project_info[3]
-	script = project_script.split("\n")
-	
-	cmd = []
-	code = []
-	for sc in script:
-		code.append(sc.strip())
-	cmd.append('\n'.join(code))
-	cmd.append("print('Hello!!')\n")
-	cmd.append('from datasci.src import util_interactive')
-	cmd.append('util_interactive.printfigs("fig", None, ".png")')
-	cmd.append("quit()\n")
+    project_info = get_project_info(pid)
+    project_script = project_info[3]
+    script = project_script.split("\n")
+    
+    cmd = []
+    code = []
+    for sc in script:
+        if sc != '\n':
+            code.append(sc)
+            
+    cmd.append('\n'.join(code))
+    cmd.append("print('Hello!!')\n")
+    cmd.append('from datasci.src import util_interactive')
+    cmd.append('util_interactive.printfigs("fig", None, ".png")')
+    #cmd.append("quit()\n")
 
-	output, error = run_multiscript.run(cmd)
-	data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error, 'script': '\n'.join(code)}
-	return render(request, 'view-data-ex.html', data)
+    output, error = run_multiscript.run(cmd)
+    data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error, 'script': '\n'.join(code)}
+    return render(request, 'view-data-ex.html', data)
 
 def get_project_info(pid):
     try:
@@ -172,7 +175,9 @@ def websocket_console(request):
     
 def editor(request, pid=""):
     project_info = get_project_info(pid)
-    data = {'blog_title': 'Python Editor', 'project_info': project_info}
+    dateTimeObj = datetime.now()
+    timestampStr = dateTimeObj.strftime("%d%b%Y%H%M%S%f)")
+    data = {'blog_title': 'Python Editor', 'project_info': project_info, 'now':timestampStr}
     
     return render(request, 'python-editor.html', data)
 

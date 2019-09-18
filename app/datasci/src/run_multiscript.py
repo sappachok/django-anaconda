@@ -6,11 +6,7 @@ import time
 # we'll be using a separate thread and a timed event to request the user input
 def print_buffer(timer, wait, buffer_in, buffer_out, buffer_target, buffer_err):
 	for cmd in buffer_in:
-		#buffer_target.write(cmd)
-		#print(cmd, file=buffer_target, flush=False)
 		buffer_target.write("{}\n".format(cmd))
-		#print(cmd, file=buffer_target, flush=True)
-		#print("\r\n\r\n", file=buffer_target, flush=True)
 
 	buffer_target.flush()
 	#time.sleep(0.1)
@@ -26,6 +22,7 @@ def run(commands):
 							stdin=subprocess.PIPE,  # pipe its STDIN so we can write to it
 							stdout=subprocess.PIPE,  # pipe its STDIN so we can process it
 							stderr=subprocess.PIPE,
+                            shell=True,
 							universal_newlines=True)
 	# lets build a timer which will fire off if we don't reset it
 	timer = threading.Event()  # a simple Event timer
