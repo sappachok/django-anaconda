@@ -3,7 +3,7 @@ import io
 import urllib, base64
 
 def printfigs(name="fig", size=None, ending=".png"):
-    print("Print Figures")
+    #print("Print Figures")
     images = []
 
     if len(matplotlib.pyplot.get_fignums()) == 1:
@@ -14,7 +14,7 @@ def printfigs(name="fig", size=None, ending=".png"):
         buf.seek(0)
         string = base64.b64encode(buf.read())
         output = 'data:image/png;base64,' + urllib.parse.quote(string)
-        images.append("<img src='{}'>".format(output))
+        images.append("<img src='{}' class='img-responsive'>".format(output))
         
         print(images)
         
@@ -25,7 +25,7 @@ def printfigs(name="fig", size=None, ending=".png"):
         buf.seek(0)
         string = base64.b64encode(buf.read())
         output = 'data:image/png;base64,' + urllib.parse.quote(string)
-        images.append("<img src='{}'>".format(output))
+        images.append("<img src='{}' class='img-responsive'>".format(output))
     
     for im in images:
         print(im)

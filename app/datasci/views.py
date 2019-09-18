@@ -79,7 +79,7 @@ def project_ex(request, pid):
             code.append(sc)
             
     cmd.append('\n'.join(code))
-    cmd.append("print('Hello!!')\n")
+    #cmd.append("print('Hello!!')\n")
     cmd.append('from datasci.src import util_interactive')
     cmd.append('util_interactive.printfigs("fig", None, ".png")')
     #cmd.append("quit()\n")
