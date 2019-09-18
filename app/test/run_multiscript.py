@@ -8,7 +8,8 @@ import io
 def print_buffer(timer, wait, buffer_in, buffer_out, buffer_target, buffer_err, input):
 	for cmd in buffer_in:
 		if cmd.strip() != '\n':
-			print(cmd, file=buffer_target)
+			#print(cmd, file=buffer_target)
+			buffer_target.write("{}\n".format(cmd))
 		#buffer_target.write(cmd)
 		#buffer_target.flush()
 		#input.append(buffer_out)
@@ -41,13 +42,13 @@ def run(commands):
     # now we'll read the `rasa` STDOUT line by line, forward it to output_buffer and reset
     # the timer each time a new line is encountered
 	
-    
+    '''
     output = []
     for line in proc.stdout:        
         output.append(line)
     
     print(output)
-    
+    '''
     '''
     error = []
     for line in proc.stderr:
@@ -56,6 +57,13 @@ def run(commands):
     print(error)
     '''
     proc.stdin.close()
+
+    output = []
+    for line in proc.stdout:        
+        output.append(line)
+    
+    print(output)
+	
     proc.terminate()
     proc.wait()       
 
@@ -66,10 +74,6 @@ if __name__ == "__main__":
 	
 	commands = f.read().splitlines()
 	commands.append("1+1\n")
-	#commands.append("1+200\n")
-	#commands.append('exit(42)')
-	#commands.append('quit()')
-	commands.append('exit(42)')
 	commands.append("1+300\n")
 	commands.append('import util_interactive')
 	commands.append('util_interactive.printfigs("fig", None, ".png")')
