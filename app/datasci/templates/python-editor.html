@@ -8,10 +8,18 @@
         <div class="col-sm-12">
             <h1>Editor</h1>
             {% block javascript %}
+			
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css"/>		
+			<link rel="stylesheet" href="{% static 'editor/editor.css' %}?{{ now }}"/>		
+			
             <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
             
             <script type="text/javascript" src="{% static 'templates/admin-lte/bower_components/jquery/dist/jquery.min.js' %}"></script>
-			<script type="text/javascript" src="{% static 'js/editor.js' %}{{ now }}"></script>			
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-sortable/0.9.13/jquery-sortable-min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>   
+				
+			<script type="text/javascript" src="{% static 'editor/editor.js' %}?{{ now }}"></script>					
+			<script type="text/javascript" src="{% static 'editor/autosize.js' %}"></script>					
             {% csrf_token %}
             <script language="JavaScript">
                 $(document).ready(function() {
@@ -82,11 +90,28 @@
             {% endblock %}
             {% block content %}
             {% url "editor-process" %}
+			<!--
+			<p>
+				<textarea name="command" class="form-control inp-command" rows=10>{{ project_info.3 }}</textarea>
+            </p>
+			-->
             <form id="form1" action='{% url "get-output" %}' method="post">
-                <p>
-                    <textarea name="command" class="form-control inp-command" rows=10>{{ project_info.3 }}</textarea>
-                </p>
+			<p>
+				<ul id="draggablePanelList" class="list-unstyled"></ul>
+			</p>
+			<p>
+				<button id="query_btn" type="button" class="btn btn-primary">Query</button>
+				<button id="add_console_btn" type="button" class="btn btn-default">Add Console</button>
+			</p>
+			<p>
+				<div id="result"></div>
+			</p>
+			<p>
                 <button type="submit" class="btn btn-primaray">Sign up</button>
+			</p>
+			<p>
+				<textarea id="json_value" class="form-control"></textarea>
+			</p>
             </form>
 			{{ result }}
 			<br>

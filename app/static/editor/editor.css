@@ -1,0 +1,83 @@
+.text-editor {
+  padding:10px;
+  border:1px solid #dddddd;
+  background-color: #ffffff;
+  width: 100%;
+}
+
+.input-box {
+  margin-bottom:40px;
+}
+
+.input-no {
+  padding:10px;
+  position:absolute;
+  left:50px;
+}
+
+.item-head-tools {
+  display:inline-block;
+  border:1px solid #dddddd;  
+  background-color:#eeeeee;
+  padding:0px 10px;
+  margin:0px;
+}
+
+.item-head-tools > li.item-tool {
+  cursor: pointer;
+  display: inline-block;
+  padding:5px;
+  margin:0px;
+  color: #777777;
+}
+
+#mover_tool {
+  cursor: move;
+}
+
+#type_tool {
+  cursor: pointer;
+}
+
+.section-menu {
+  float:right;
+}
+
+.section-name-input {
+  display:block;
+  width:80%;
+}
+.section-name-input input {
+  flex: 1 1 auto; position: relative; width:50%;
+}
+.form-inline .input-group > .form-control {
+  width: auto;
+}
+.section-name-input .input-group {
+  display: inline-block;
+  width: auto;
+}
+.section-name-label,
+.section-name-input
+{
+  display: inline-block;
+}
+.section-name-input button {
+  font-size: 100%;
+}
+.input-group-btn,
+.input-group-btn button {
+  font-size: 100% !important;
+}
+
+.input-group span {
+  padding:5px 10px;
+}
+
+#draggablePanelList .panel-heading {
+  cursor: move;
+}
+
+#movetest {
+  cursor: move;
+}
