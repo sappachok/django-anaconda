@@ -62,14 +62,15 @@
                                 url: $(this).attr('action'), // the file to call
                                 success: function(response) { // on success..
                                     //$('#DIV_CONTAINING_FORM').html(response); // update the DIV 
-                                    //console.log(response);
+                                    console.log(response);
                                     var result = $('#result');
                                     result.html("");
-									
+									/*
                                     $.each(response[0], function(i, val) {
                                         result.append("<div>" + val + "</div>");
                                         //console.log(val);
                                     });
+									*/
 
                                 }
                             });
@@ -95,7 +96,8 @@
 				<textarea name="command" class="form-control inp-command" rows=10>{{ project_info.3 }}</textarea>
             </p>
 			-->
-            <form id="form1" action='{% url "get-output" %}' method="post">
+            <form id="form1" action='{% url "editor-process" %}' method="post">
+			<input type="hidden" name="pid" value="{{project_info.1}}">
 			<p>
 				<ul id="draggablePanelList" class="list-unstyled"></ul>
 			</p>
@@ -107,10 +109,10 @@
 				<div id="result"></div>
 			</p>
 			<p>
-                <button type="submit" class="btn btn-primaray">Sign up</button>
+                <button type="submit" class="btn btn-primaray">Save</button>
 			</p>
 			<p>
-				<textarea id="json_value" class="form-control"></textarea>
+				<textarea id="json_value" name="json_value" class="form-control"></textarea>
 			</p>
             </form>
 			{{ result }}

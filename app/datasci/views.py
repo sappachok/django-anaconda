@@ -18,12 +18,14 @@ import psycopg2
 
 from io import StringIO
 import time
-from datasci.src import multicommand, clientsocket, run_multiscript, interact_subprocess
+from datasci.src import multicommand, clientsocket, run_multiscript, run_multiscript2, interact_subprocess
 
 import fcntl
 import select
 import time
 from datetime import datetime
+
+from editor.models import Invite, PythonCode, PythonLab
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -69,24 +71,56 @@ def project(request, pid):
 
 def project_ex(request, pid):
     project_info = get_project_info(pid)
-    project_script = project_info[3]
-    script = project_script.split("\n")
-    
+    project_script = json.loads(project_info[3])
+    #script = project_script.split("\n")
+
     cmd = []
     code = []
+    allcode = []
+    #project_script[0]["source"]
+    for bl in project_script:
+        code = []
+        script = bl["source"].split("\n")
+        type = bl["type"]
+        cmd.append("print(\"add_block()\")\n")
+        for sc in script:
+            if sc != '\n':
+                code.append(sc)
+                allcode.append(sc)
+
+        cmd.append('\n'.join(code))
+        #cmd.append("print('Hello!!')\n")
+        #cmd.append('from datasci.src import util_interactive')
+        #cmd.append('util_interactive.printfigs("fig", None, ".png")')
+
+    output, error = run_multiscript.run(cmd)
+
+
+    data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error, 'script': '\n'.join(allcode)}
+    return render(request, 'view-data-ex.html', data)
+
+
+def project_ex2(request, pid):
+    project_info = get_project_info(pid)
+    project_script = project_info[3]
+    script = project_script.split("\n")
+
+    cmd = []
+    code = []
+
     for sc in script:
         if sc != '\n':
             code.append(sc)
-            
+
     cmd.append('\n'.join(code))
-    #cmd.append("print('Hello!!')\n")
+    cmd.append("print('Hello!!')\n")
     cmd.append('from datasci.src import util_interactive')
     cmd.append('util_interactive.printfigs("fig", None, ".png")')
-    #cmd.append("quit()\n")
+    output, error = run_multiscript2.run(cmd)
 
-    output, error = run_multiscript.run(cmd)
-    data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error, 'script': '\n'.join(code)}
-    return render(request, 'view-data-ex.html', data)
+    data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error,
+            'script': '\n'.join(code)}
+    return render(request, 'view-data-ex2.html', data)
 
 def get_project_info(pid):
     try:
@@ -203,11 +237,15 @@ def get_interactive_output(request):
     return HttpResponse(result)
     
 def editor_process(request):
-    cmd = request.POST.get("command")
-    commands = prepaire_command(cmd)
-    
-    
-    return HttpResponse(json.dumps(output), content_type="application/json")
+    pid = request.POST.get("pid")
+    cmd = request.POST.get("json_value")
+    #commands = prepaire_command(cmd)
+    try:
+        PythonLab.objects.filter(name=pid).update(script=cmd)
+    except Exception as e:
+        return HttpResponse("Error : {0}".format(e))
+
+    return HttpResponse("Success")
 
 def prepaire_command(cmd, sp='\r\n'):
     command_list = cmd.split(sp)

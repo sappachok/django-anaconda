@@ -5,16 +5,6 @@ import time
 
 # we'll be using a separate thread and a timed event to request the user input
 
-result_output = {}
-error_output = []
-
-num_block = 0
-
-def add_result(n, data):
-	global result_output, num_block
-
-	result_output[n] = data
-
 def print_buffer(timer, wait, buffer_in, buffer_out, buffer_target, buffer_err):
 	global num_block
 
@@ -53,11 +43,7 @@ def run(commands):
 
 	output = []
 	for line in proc.stdout:
-		if line == "add_block()\n":
-			num_block = num_block + 1
-		else:
-			add_result(num_block, line)
-		#output.append(line)
+		output.append(line)
 	
 	error = []
 	for line in proc.stderr:
@@ -66,7 +52,4 @@ def run(commands):
 	proc.terminate()
 	proc.wait(timeout=0.2)
 
-	#result_output[num_block] = output
-	error_output.append(error)
-
-	return (result_output, error_output)
+	return (output, error)

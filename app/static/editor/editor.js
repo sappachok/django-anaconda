@@ -1,22 +1,4 @@
 $(function() {
-	$.fn.autoResize = function(obj) {
-		if($(this).prop('tagName') == 'TEXTAREA') {
-			
-			$(this).css("overflow-y", "hidden");
-			$(this).css("resize", "none");
-
-			$(this).keyup(function(){
-				arr = $(this).val().split("\n");
-				$(this).attr("rows", arr.length);	
-			
-				if(obj && "step" in obj) {
-					obj.step({count: arr.length-1});
-				}
-			});
-
-		}
-	}
-
   var inputboxli = '<li class="input-box">' +
       '<ul class="input-box-heading item-head-tools list-unstyled">' +
       '<li id="mover-tool" class="item-tool"><span class="glyphicon glyphicon-move"></span></li>' +
