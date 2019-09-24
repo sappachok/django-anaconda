@@ -5,15 +5,10 @@ import time
 
 # we'll be using a separate thread and a timed event to request the user input
 
-result_output = {}
+result_output = []
 error_output = []
 
 num_block = 0
-
-def add_result(n, data):
-	global result_output, num_block
-
-	result_output[n] = data
 
 def print_buffer(timer, wait, buffer_in, buffer_out, buffer_target, buffer_err):
 	global num_block
@@ -51,14 +46,36 @@ def run(commands):
 
 	proc.stdin.close()
 
-	output = []
+	output = {
+		"type":"",
+		"data":[]
+	}
+
 	for line in proc.stdout:
-		if line == "add_block()\n":
-			num_block = num_block + 1
+
+		if line == "end_block()\n":
+			output["type"] = "script"
+			result_output.append(output)
+			# output["data"] = []
+
+		'''
+		elif line == "add_block(script)\n":
+			output["type"] = "script"
+			output["data"] = []
+		elif line == "add_block(html)\n":
+			output["type"] = "html"
+			output["data"] = []
 		else:
-			add_result(num_block, line)
-		#output.append(line)
-	
+			output["data"].append(line)
+		'''
+		output["data"].append(line)
+
+		#output["type"] = "script"
+		#output["data"].append(line)
+
+	#result_output.append(output)
+	#result_output.pop(0)
+
 	error = []
 	for line in proc.stderr:
 		error.append(line)

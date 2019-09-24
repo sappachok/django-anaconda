@@ -75,20 +75,23 @@ def project_ex(request, pid):
     #script = project_script.split("\n")
 
     cmd = []
-    code = []
+
     allcode = []
-    #project_script[0]["source"]
+
     for bl in project_script:
         code = []
         script = bl["source"].split("\n")
         type = bl["type"]
-        cmd.append("print(\"add_block()\")\n")
+        cmd.append("print(\"add_block({})\")\n".format(type))
         for sc in script:
             if sc != '\n':
                 code.append(sc)
                 allcode.append(sc)
-
         cmd.append('\n'.join(code))
+        cmd.append("print(\"end_block()\")\n")
+
+    #return HttpResponse("<textarea>{}</textarea>".format(cmd))
+
         #cmd.append("print('Hello!!')\n")
         #cmd.append('from datasci.src import util_interactive')
         #cmd.append('util_interactive.printfigs("fig", None, ".png")')
@@ -113,7 +116,6 @@ def project_ex2(request, pid):
             code.append(sc)
 
     cmd.append('\n'.join(code))
-    cmd.append("print('Hello!!')\n")
     cmd.append('from datasci.src import util_interactive')
     cmd.append('util_interactive.printfigs("fig", None, ".png")')
     output, error = run_multiscript2.run(cmd)
@@ -240,12 +242,13 @@ def editor_process(request):
     pid = request.POST.get("pid")
     cmd = request.POST.get("json_value")
     #commands = prepaire_command(cmd)
+
     try:
         PythonLab.objects.filter(name=pid).update(script=cmd)
     except Exception as e:
         return HttpResponse("Error : {0}".format(e))
 
-    return HttpResponse("Success")
+    return HttpResponse(cmd)
 
 def prepaire_command(cmd, sp='\r\n'):
     command_list = cmd.split(sp)
