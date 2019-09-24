@@ -53,11 +53,6 @@ def run(commands):
 
 	for line in proc.stdout:
 
-		if line == "end_block()\n":
-			output["type"] = "script"
-			result_output.append(output)
-			# output["data"] = []
-
 		'''
 		elif line == "add_block(script)\n":
 			output["type"] = "script"
@@ -69,6 +64,11 @@ def run(commands):
 			output["data"].append(line)
 		'''
 		output["data"].append(line)
+
+		if line == "end_block()\n":
+			output["type"] = "script"
+			result_output.append(output)
+			#output["data"] = []
 
 		#output["type"] = "script"
 		#output["data"].append(line)
