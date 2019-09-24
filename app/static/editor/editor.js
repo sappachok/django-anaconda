@@ -1,36 +1,61 @@
-$(function() {
-  var inputboxli = '<li class="input-box">' +
-      '<ul class="input-box-heading item-head-tools list-unstyled">' +
-      '<li id="mover-tool" class="item-tool"><span class="glyphicon glyphicon-move"></span></li>' +
-      '<li id="type-tool" class="item-tool" data-type="script">' +
-      '<div class="dropdown">' +
-      '<div class="dropdown-toggle" type="button" data-toggle="dropdown"><span class="item-type">script</span>' +
-      '<span class="caret"></span>' +
-      '</div>' +
-      '<ul class="dropdown-menu">' +
-      '<li><a href="#" data-value="script" class="type-select">Script</a></li>' +
-      '<li><a href="#" data-value="html" class="type-select">HTML</a></li>' +
-      '<li><a href="#" data-value="h1" class="type-select">Heading 1</a></li>' +
-      '</ul>' +
-      '</div>' +
-      '</li>' +
-      '<li id="type-tool" class="item-tool">' +
-      '<div class="dropdown">' +
-      '<div class="dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-option-vertical"></span>' +
-      '</div>' +
-      '<ul class="dropdown-menu">' +
-      '<li><a href="#">Delete</a></li>' +
-      '</ul>' +
-      '</div>' +
-      '</li>' +
-      '</ul>' +
-      '<div class="input-box-editor">' +
-      '<textarea class="text-editor" rows=1></textarea>' +
-      '</div>' +
-      '</li>';
+jQuery(function($) {
+  var script_json = $("#script").val();
+  var script = $.parseJSON(script_json);
 
-  function add_input_box() {
+  window.form_get_query = function() {
+    setListData();
+    //console.log(listData);
+    $('#result').html("");
+    $.each(listData, function(i, d) {
+      $('#result').append("<p>("+d.type+") => ("+d.source+")</p>");
+    });
+  }
+
+  function get_query() {
+    setListData();
+    console.log(listData);
+    $('#result').html("");
+    $.each(listData, function(i, d) {
+      $('#result').append("<p>("+d.type+") => ("+d.source+")</p>");
+    });
+  }
+
+  function add_input_box(type, source) {
+	 inputboxli = '<li class="input-box">' +
+		  '<ul class="input-box-heading item-head-tools list-unstyled">' +
+		  '<li id="mover-tool" class="item-tool"><span class="glyphicon glyphicon-move"></span></li>' +
+		  '<li id="type-tool" class="item-tool" data-type="script">' +
+		  '<div class="dropdown">' +
+		  '<div class="dropdown-toggle" type="button" data-toggle="dropdown"><span class="item-type">' + type + '</span>' +
+		  '<span class="caret"></span>' +
+		  '</div>' +
+		  '<ul class="dropdown-menu">' +
+		  '<li><a href="#" data-value="script" class="type-select">Script</a></li>' +
+		  '<li><a href="#" data-value="html" class="type-select">HTML</a></li>' +
+		  '<li><a href="#" data-value="h1" class="type-select">Heading 1</a></li>' +
+		  '</ul>' +
+		  '</div>' +
+		  '</li>' +
+		  '<li id="type-tool" class="item-tool">' +
+		  '<div class="dropdown">' +
+		  '<div class="dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-option-vertical"></span>' +
+		  '</div>' +
+		  '<ul class="dropdown-menu">' +
+		  '<li><a href="#deletblock" class="delete-block-item">Delete this block</a></li>' +
+		  '</ul>' +
+		  '</div>' +
+		  '</li>' +
+		  '</ul>' +
+		  '<div class="input-box-editor">' +
+		  '<textarea class="text-editor" rows=1>' + source + '</textarea>' +
+		  '</div>' +
+		  '</li>';
+
     $('#draggablePanelList').append(inputboxli);
+
+	$('.delete-block-item').click(function() {
+		$(this).closest("li.input-box").remove();
+	});
 
 	$('.text-editor').on('keydown', function(e){
 		if(e.keyCode == 9){
@@ -65,9 +90,15 @@ $(function() {
       //alert($(this).attr("data-value"));
     });    
   }
-  $("#add_console_btn").click(function() {
-    add_input_box();
+
+  $.each(script, function(i,d) {
+	add_input_box(d.type, d.source);
+  });
+
   autosize(document.querySelectorAll('textarea'));
+
+  $("#add_console_btn").click(function() {
+    add_input_box("script","");
   });
 
   $('#query_btn').click(function() {

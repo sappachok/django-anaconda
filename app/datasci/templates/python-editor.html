@@ -55,6 +55,9 @@
                             }
                         });
                         try {
+							//editor();
+					        form_get_query();
+
                             $.ajax({ // create an AJAX call...
                                 data: $(this).serialize(), // get the form data
                                 csrfmiddlewaretoken: csrftoken,
@@ -96,20 +99,20 @@
 				<textarea name="command" class="form-control inp-command" rows=10>{{ project_info.3 }}</textarea>
             </p>
 			-->
+
             <form id="form1" action='{% url "editor-process" %}' method="post">
+			<input id="script" type="hidden" name="script" value="{{ project_info.3 }}">
 			<input type="hidden" name="pid" value="{{project_info.1}}">
 			<p>
 				<ul id="draggablePanelList" class="list-unstyled"></ul>
 			</p>
 			<p>
-				<button id="query_btn" type="button" class="btn btn-primary">Query</button>
+			    <button type="submit" class="btn btn-primary">Save</button>
+				<!--<button id="query_btn" type="button" class="btn btn-primary">Query</button>-->
 				<button id="add_console_btn" type="button" class="btn btn-default">Add Console</button>
 			</p>
 			<p>
 				<div id="result"></div>
-			</p>
-			<p>
-                <button type="submit" class="btn btn-primaray">Save</button>
 			</p>
 			<p>
 				<textarea id="json_value" name="json_value" class="form-control"></textarea>

@@ -4,7 +4,6 @@ import urllib, base64
 
 def printfigs(name="fig", size=None, ending=".png"):
     #print("Print Figures")
-    images = []
 
     if len(matplotlib.pyplot.get_fignums()) == 1:
         num = matplotlib.pyplot.get_fignums()[0]
@@ -14,18 +13,19 @@ def printfigs(name="fig", size=None, ending=".png"):
         buf.seek(0)
         string = base64.b64encode(buf.read())
         output = 'data:image/png;base64,' + urllib.parse.quote(string)
-        images.append("<img src='{}' class='img-responsive'>".format(output))
-        
-        print(images)
-        
-    for num in matplotlib.pyplot.get_fignums():
-        fig = matplotlib.pyplot.figure(num)
-        buf = io.BytesIO()
-        fig.savefig(buf, format='png')
-        buf.seek(0)
-        string = base64.b64encode(buf.read())
-        output = 'data:image/png;base64,' + urllib.parse.quote(string)
-        images.append("<img src='{}' class='img-responsive'>".format(output))
-    
-    for im in images:
-        print(im)
+        image = "<img src='{}' class='img-responsive'>".format(output)
+        #print("(img)")
+        print(image)
+    else:
+        for num in matplotlib.pyplot.get_fignums():
+            fig = matplotlib.pyplot.figure(num)
+            buf = io.BytesIO()
+            fig.savefig(buf, format='png')
+            buf.seek(0)
+            string = base64.b64encode(buf.read())
+            output = 'data:image/png;base64,' + urllib.parse.quote(string)
+            image = "<img src='{}' class='img-responsive'>".format(output)
+            print(image)
+        # print("(img)")
+    #for im in images:
+        #print(im)

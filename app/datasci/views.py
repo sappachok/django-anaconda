@@ -78,6 +78,7 @@ def project_ex(request, pid):
 
     allcode = []
 
+    cmd.append('from datasci.src import util_interactive')
     for bl in project_script:
         code = []
         script = bl["source"].split("\n")
@@ -88,15 +89,14 @@ def project_ex(request, pid):
                 code.append(sc)
                 allcode.append(sc)
         cmd.append('\n'.join(code))
+
+        cmd.append('util_interactive.printfigs("fig", None, ".png")')
         cmd.append("print(\"end_block()\")\n")
 
     #return HttpResponse("<textarea>{}</textarea>".format(cmd))
 
-        #cmd.append("print('Hello!!')\n")
-        #cmd.append('from datasci.src import util_interactive')
-        #cmd.append('util_interactive.printfigs("fig", None, ".png")')
-
-    output, error = run_multiscript.run(cmd)
+    multiscript = run_multiscript.Multiscript()
+    output, error = multiscript.run(cmd)
 
 
     data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error, 'script': '\n'.join(allcode)}
@@ -203,12 +203,6 @@ def connectdb():
 class SampleView(TemplateView):
     template_name = 'about.html'
 
-def websocket_console(request):
-    # project_info = get_project_info(pid)
-    data = {'blog_title': 'Python Editor'}
-    
-    return render(request, 'websocket-console.html', data)
-    
 def editor(request, pid=""):
     project_info = get_project_info(pid)
     dateTimeObj = datetime.now()
@@ -258,26 +252,6 @@ def prepaire_command(cmd, sp='\r\n'):
 
     return data
 
-def client_socket(request):
-    '''
-    command = ['python3', os.path.join(app_dir, 'client.py')]
-    process = Popen(command, stdout=PIPE, stderr=STDOUT, encoding="utf-8")
-    tmp = process.stdout.read()
-    '''
-    '''
-    clientsocket.connect()
-    return HttpResponse("Hello Server")
-    '''
-    data = []
-    try :
-        data = clientsocket.test_command()
-    except:
-        data.append("Error")
-    
-    # data.append(proc.stdout.readline())
-    
-    return HttpResponse(data)
-        
 def chartjs(request):
     data = {'blog_title': 'Datasci App'}
     # pretty_data = db_output
