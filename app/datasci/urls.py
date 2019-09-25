@@ -9,6 +9,7 @@ urlpatterns = [
     path('/', views.datasci, name='datasci'),
     path('/project/<str:pid>/', views.project_ex, name='project'),
     path('/project_ex/<str:pid>/', views.project_ex2, name='project-ex'),
+    path('/project_preview/<str:pid>/', views.project_preview, name='project-preview'),
     path('/editor/<str:pid>/', views.editor, name='editor'),
     path('/editor_process/', views.editor_process, name='editor-process'),
     path('/get-output/', views.get_interactive_output, name='get-output'),

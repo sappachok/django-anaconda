@@ -104,8 +104,9 @@ jQuery(function($) {
 
   autosize(document.querySelectorAll('textarea'));
 
-  $("#add_console_btn").click(function() {
+  $(".add-console-btn").click(function() {
     add_input_box("script","");
+    autosize(document.querySelectorAll('textarea'));
   });
 
   $('#query_btn').click(function() {

@@ -4,7 +4,7 @@ import urllib, base64
 
 def printfigs(name="fig", size=None, ending=".png"):
     #print("Print Figures")
-
+    images = []
     if len(matplotlib.pyplot.get_fignums()) == 1:
         num = matplotlib.pyplot.get_fignums()[0]
         fig = matplotlib.pyplot.figure(num)
@@ -14,8 +14,9 @@ def printfigs(name="fig", size=None, ending=".png"):
         string = base64.b64encode(buf.read())
         output = 'data:image/png;base64,' + urllib.parse.quote(string)
         image = "<img src='{}' class='img-responsive'>".format(output)
+        images.append({"no":1, "src":image})
         #print("(img)")
-        print(image)
+        return images
     else:
         for num in matplotlib.pyplot.get_fignums():
             fig = matplotlib.pyplot.figure(num)
@@ -25,7 +26,8 @@ def printfigs(name="fig", size=None, ending=".png"):
             string = base64.b64encode(buf.read())
             output = 'data:image/png;base64,' + urllib.parse.quote(string)
             image = "<img src='{}' class='img-responsive'>".format(output)
-            print(image)
+            images.append({"no":num, "src":image})
+        return images
         # print("(img)")
     #for im in images:
         #print(im)

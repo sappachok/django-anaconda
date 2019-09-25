@@ -79,6 +79,8 @@ def project_ex(request, pid):
     allcode = []
 
     cmd.append('from datasci.src import util_interactive')
+    cmd.append('_matpotimages_lastoutput = -1')
+
     for bl in project_script:
         code = []
         script = bl["source"].split("\n")
@@ -90,7 +92,14 @@ def project_ex(request, pid):
                 allcode.append(sc)
         cmd.append('\n'.join(code))
 
-        cmd.append('util_interactive.printfigs("fig", None, ".png")')
+        cmd.append('_matpotimages = util_interactive.printfigs("fig", None, ".png")')
+        cmd.append('for im in _matpotimages:')
+        cmd.append('    if im["no"] > _matpotimages_lastoutput:')
+        # cmd.append('        print(im["no"])')
+        cmd.append('        print(im["src"])')
+        cmd.append('        _matpotimages_lastoutput = im["no"]')
+        # cmd.append('    _matpotimages_output.append(im["no"])')
+
         cmd.append("print(\"end_block()\")\n")
 
     #return HttpResponse("<textarea>{}</textarea>".format(cmd))
@@ -102,6 +111,43 @@ def project_ex(request, pid):
     data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error, 'script': '\n'.join(allcode)}
     return render(request, 'view-data-ex.html', data)
 
+def project_preview(request, pid):
+    project_info = get_project_info(pid)
+    project_script = json.loads(project_info[3])
+
+    cmd = []
+    allcode = []
+
+    cmd.append('from datasci.src import util_interactive')
+    cmd.append('_matpotimages_lastoutput = -1')
+    for bl in project_script:
+        code = []
+        script = bl["source"].split("\n")
+        type = bl["type"]
+        cmd.append("print(\"add_block({})\")\n".format(type))
+        for sc in script:
+            if sc != '\n':
+                code.append(sc)
+                allcode.append(sc)
+        cmd.append('\n'.join(code))
+
+        cmd.append('_matpotimages = util_interactive.printfigs("fig", None, ".png")')
+
+        cmd.append('for im in _matpotimages:')
+        cmd.append('    if im["no"] > _matpotimages_lastoutput:')
+        # cmd.append('        print(im["no"])')
+        cmd.append('        print(im["src"])')
+        cmd.append('        _matpotimages_lastoutput = im["no"]')
+        # cmd.append('    _matpotimages_output.append(im["no"])')
+
+        cmd.append("print(\"end_block()\")\n")
+
+    multiscript = run_multiscript.Multiscript()
+    output, error = multiscript.run(cmd)
+
+    data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error,
+            'script': '\n'.join(allcode)}
+    return render(request, 'project-preview.html', data)
 
 def project_ex2(request, pid):
     project_info = get_project_info(pid)
