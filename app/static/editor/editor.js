@@ -1,6 +1,5 @@
 jQuery(function($) {
-  var script_json = $("#script").val();
-  var script = $.parseJSON(script_json);
+  var script_json = $("#script").val(); 
 
   window.form_get_query = function() {
     setListData();
@@ -91,9 +90,17 @@ jQuery(function($) {
     });    
   }
 
-  $.each(script, function(i,d) {
-	add_input_box(d.type, d.source);
-  });
+  try
+  {
+	var script = $.parseJSON(script_json);
+	$.each(script, function(i,d) {
+	  add_input_box(d.type, d.source);
+	});
+  }
+  catch (err)
+  {
+	add_input_box("script", "");
+  }
 
   autosize(document.querySelectorAll('textarea'));
 
