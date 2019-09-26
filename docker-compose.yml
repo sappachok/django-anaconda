@@ -11,7 +11,7 @@ services:
     container_name: django-gunicorn
     restart: always
     env_file:
-      - django.env
+      - .env
     volumes:
       - ./app:/src
     ports:
