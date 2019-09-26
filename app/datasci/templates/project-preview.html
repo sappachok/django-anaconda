@@ -17,3 +17,14 @@
 	</div>
 	{% endif %}
 	{% endfor %}
+
+	{% if error  %}
+	<div class="box box-warning">
+	  <div class="box-body">
+	  <h4>Error:</h4>
+	  {% for out in error %}
+		<p>{{ out|safe }}</p>
+	  {% endfor %}
+	  </div>
+	</div>
+	{% endif %}

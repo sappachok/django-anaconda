@@ -5,20 +5,9 @@ import urllib, base64
 def printfigs(name="fig", size=None, ending=".png"):
     #print("Print Figures")
     images = []
-    if len(matplotlib.pyplot.get_fignums()) == 1:
-        num = matplotlib.pyplot.get_fignums()[0]
-        fig = matplotlib.pyplot.figure(num)
-        buf = io.BytesIO()
-        fig.savefig(buf, format='png')
-        buf.seek(0)
-        string = base64.b64encode(buf.read())
-        output = 'data:image/png;base64,' + urllib.parse.quote(string)
-        image = "<img src='{}' class='img-responsive'>".format(output)
-        images.append({"no":1, "src":image})
-        #print("(img)")
-        return images
-    else:
-        for num in matplotlib.pyplot.get_fignums():
+    try:
+        if len(matplotlib.pyplot.get_fignums()) == 1:
+            num = matplotlib.pyplot.get_fignums()[0]
             fig = matplotlib.pyplot.figure(num)
             buf = io.BytesIO()
             fig.savefig(buf, format='png')
@@ -26,8 +15,20 @@ def printfigs(name="fig", size=None, ending=".png"):
             string = base64.b64encode(buf.read())
             output = 'data:image/png;base64,' + urllib.parse.quote(string)
             image = "<img src='{}' class='img-responsive'>".format(output)
-            images.append({"no":num, "src":image})
-        return images
-        # print("(img)")
-    #for im in images:
-        #print(im)
+            images.append({"no":1, "src":image})
+            #print("(img)")
+            return images
+        else:
+            for num in matplotlib.pyplot.get_fignums():
+                fig = matplotlib.pyplot.figure(num)
+                buf = io.BytesIO()
+                fig.savefig(buf, format='png')
+                buf.seek(0)
+                string = base64.b64encode(buf.read())
+                output = 'data:image/png;base64,' + urllib.parse.quote(string)
+                image = "<img src='{}' class='img-responsive'>".format(output)
+                images.append({"no":num, "src":image})
+            return images
+    except Exception as e:
+        # print(e)
+        return False

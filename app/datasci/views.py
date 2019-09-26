@@ -92,14 +92,15 @@ def project_ex(request, pid):
                 allcode.append(sc)
         cmd.append('\n'.join(code))
 
+        '''
         cmd.append('_matpotimages = util_interactive.printfigs("fig", None, ".png")')
-        cmd.append('for im in _matpotimages:')
-        cmd.append('    if im["no"] > _matpotimages_lastoutput:')
-        # cmd.append('        print(im["no"])')
-        cmd.append('        print(im["src"])')
-        cmd.append('        _matpotimages_lastoutput = im["no"]')
+        cmd.append('if _matpotimages:')
+        cmd.append('    for im in _matpotimages:')
+        cmd.append('        if im["no"] > _matpotimages_lastoutput:')
+        cmd.append('            print(im["src"])')
+        cmd.append('            _matpotimages_lastoutput = im["no"]')
         # cmd.append('    _matpotimages_output.append(im["no"])')
-
+        '''
         cmd.append("print(\"end_block()\")\n")
 
     #return HttpResponse("<textarea>{}</textarea>".format(cmd))
@@ -132,13 +133,12 @@ def project_preview(request, pid):
         cmd.append('\n'.join(code))
 
         cmd.append('_matpotimages = util_interactive.printfigs("fig", None, ".png")')
-
-        cmd.append('for im in _matpotimages:')
-        cmd.append('    if im["no"] > _matpotimages_lastoutput:')
-        # cmd.append('        print(im["no"])')
-        cmd.append('        print(im["src"])')
-        cmd.append('        _matpotimages_lastoutput = im["no"]')
-        # cmd.append('    _matpotimages_output.append(im["no"])')
+        
+        cmd.append('if _matpotimages:')
+        cmd.append('    for im in _matpotimages:')
+        cmd.append('        if im["no"] > _matpotimages_lastoutput:')
+        cmd.append('            print(im["src"])')
+        cmd.append('            _matpotimages_lastoutput = im["no"]')
 
         cmd.append("print(\"end_block()\")\n")
 
