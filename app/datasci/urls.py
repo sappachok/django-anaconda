@@ -10,8 +10,12 @@ urlpatterns = [
     path('/project/<str:pid>/', views.project_ex, name='project'),
     path('/project_ex/<str:pid>/', views.project_ex2, name='project-ex'),
     path('/project_preview/<str:pid>/', views.project_preview, name='project-preview'),
+    path('/project_session_clear/<str:pid>/', views.project_session_clear, name='project-session-clear'),
+
     path('/editor/<str:pid>/', views.editor, name='editor'),
+    path('/editor_runresponse/<str:pid>/', views.editor_runresponse, name='editor-runresponse'),
     path('/editor_process/', views.editor_process, name='editor-process'),
+
     path('/get-output/', views.get_interactive_output, name='get-output'),
     path('/chartjs/', views.chartjs, name='chartjs'),
     path('/chartjs/api/', views.chart_data, name='chartjs-chart_data'),

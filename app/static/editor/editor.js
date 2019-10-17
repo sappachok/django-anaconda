@@ -18,9 +18,10 @@ jQuery(function($) {
       $('#result').append("<p>("+d.type+") => ("+d.source+")</p>");
     });
   }
+  var bno = 1;
 
   function add_input_box(type, source) {
-	 inputboxli = '<li class="input-box">' +
+	 inputboxli = '<li class="input-box" id="ibid_'+bno+'">' +
 		  '<ul class="input-box-heading item-head-tools list-unstyled">' +
 		  '<li id="mover-tool" class="item-tool"><span class="glyphicon glyphicon-move"></span></li>' +
 		  '<li id="type-tool" class="item-tool" data-type="script">' +
@@ -48,16 +49,18 @@ jQuery(function($) {
 		  '<div class="input-box-editor">' +
 		  '<textarea class="text-editor" rows=1>' + source + '</textarea>' +
 		  '</div>' +
+		  '<div id="ibid_pre_'+bno+'" class="output-preview"></div>' +			
 		  '</li>';
 
     $('#draggablePanelList').append(inputboxli);
 
+	/*
 	$('.delete-block-item').click(function() {
 		$(this).closest("li.input-box").remove();
 	});
 
-	$('.text-editor').on('keydown', function(e){
-		if(e.keyCode == 9){
+    $('.text-editor').keydown(function (e) {
+		if (e.keyCode == 9){
             var val = this.value,
 			start = this.selectionStart,
 			end = this.selectionEnd;
@@ -71,15 +74,22 @@ jQuery(function($) {
             // prevent the focus lose
             return false;
 		}
-	});
 
-    $('.text-editor').keydown(function (e) {
-		if(e.ctrlKey == 13){
+		if (e.ctrlKey == 13) {
 
 		}
 
 		if (e.ctrlKey && e.keyCode == 13) {
 
+		}
+
+		if (e.keyCode == 13) {
+			if(e.shiftKey){
+				alert("Query!!");
+				e.preventDefault();
+			} else {
+
+			}
 		}
     });
 
@@ -87,7 +97,61 @@ jQuery(function($) {
       selected = $(this).attr("data-value");
       $(this).closest("li.item-tool").find(".item-type").html(selected);
       //alert($(this).attr("data-value"));
-    });    
+    });
+	*/
+
+	add_input_box_event(bno);
+	bno++;
+  }
+
+  function add_input_box_event(bid)
+  {
+	input_box = $('#ibid_'+bid);
+
+    input_box.find('.text-editor').keydown(function (e) {
+		if (e.keyCode == 9){
+            var val = this.value,
+			start = this.selectionStart,
+			end = this.selectionEnd;
+
+            // set textarea value to: text before caret + tab + text after caret
+            this.value = val.substring(0, start) + '\t' + val.substring(end);
+
+            // put caret at right position again
+            this.selectionStart = this.selectionEnd = start + 1;
+
+            // prevent the focus lose
+            return false;
+		}
+
+		if (e.ctrlKey == 13) {
+
+		}
+
+		if (e.ctrlKey && e.keyCode == 13) {
+
+		}
+
+		if (e.keyCode == 13) {
+			if(e.shiftKey){
+				run_response(bid, $(this).val());
+				e.preventDefault();
+			} else {
+
+			}
+		}
+    });
+
+    input_box.find(".type-select").click(function() {
+      selected = $(this).attr("data-value");
+      $(this).closest("li.item-tool").find(".item-type").html(selected);
+      //alert($(this).attr("data-value"));
+    });
+
+	input_box.find('.delete-block-item').click(function() {
+		$(this).closest("li.input-box").remove();
+	});
+
   }
 
   try

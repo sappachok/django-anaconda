@@ -110,6 +110,13 @@ def project_ex(request, pid):
     data = {'blog_title': 'Datasci App', 'project_info': project_info, 'output': output, 'error': error, 'script': '\n'.join(allcode)}
     return render(request, 'view-data-ex.html', data)
 
+def project_session_clear(request, pid):
+    fn = 'tmp/session_{}.pkl'.format(pid)
+    if os.path.exists(fn):
+        os.remove(fn)
+
+    return HttpResponse('Clear session success!!')
+
 def project_preview(request, pid):
     project_info = get_project_info(pid)
     project_script = json.loads(project_info[3])
@@ -117,8 +124,13 @@ def project_preview(request, pid):
     cmd = []
     allcode = []
 
+    cmd.append('import os.path')
+    cmd.append('import dill')
+    cmd.append('import pickle')
     cmd.append('from datasci.src import util_interactive')
     cmd.append('_matpotimages_lastoutput = -1')
+    cmd.append("if os.path.isfile('tmp/session_{}.pkl'):".format(pid))
+    cmd.append("    dill.load_session('tmp/session_{}.pkl')".format(pid))
     for bl in project_script:
         code = []
         script = bl["source"].split("\n")
@@ -140,6 +152,7 @@ def project_preview(request, pid):
 
         cmd.append("print(\"end_block()\")\n")
 
+    cmd.append("dill.dump_session('tmp/session_{}.pkl')".format(pid))
     multiscript = run_multiscript.Multiscript()
     output, error = multiscript.run(cmd)
 
@@ -254,6 +267,52 @@ def editor(request, pid=""):
     data = {'blog_title': 'Python Editor', 'project_info': project_info, 'now':timestampStr}
     
     return render(request, 'python-editor.html', data)
+
+def run_interactive_script(pid, script):
+    cmd = []
+    cmd.append('import os.path')
+    cmd.append('import dill')
+    cmd.append('import pickle')
+    cmd.append('from datasci.src import util_interactive')
+    cmd.append('_matpotimages_lastoutput = -1')
+    cmd.append("if os.path.isfile('tmp/session_{}.pkl'):".format(pid))
+    cmd.append("    dill.load_session('tmp/session_{}.pkl')".format(pid))
+
+    type = "script"
+    cmd.append("print(\"add_block({})\")\n".format(type))
+
+    cmd.append(script)
+
+    cmd.append('_matpotimages = util_interactive.printfigs("fig", None, ".png")')
+    cmd.append('if _matpotimages:')
+    cmd.append('    for im in _matpotimages:')
+    cmd.append('        if im["no"] > _matpotimages_lastoutput:')
+    cmd.append('            print(im["src"])')
+    cmd.append('            _matpotimages_lastoutput = im["no"]')
+
+    cmd.append("print(\"end_block()\")\n")
+
+
+    cmd.append("dill.dump_session('tmp/session_{}.pkl')".format(pid))
+
+    multiscript = run_multiscript.Multiscript()
+    output, error = multiscript.run(cmd)
+
+    if error == [[]]:
+        error = ""
+
+    data = {'output': output, 'error': error, 'script': script}
+    return data
+
+
+def editor_runresponse(request, pid=""):
+    # pid = request.POST.get("pid")
+    script = request.POST.get("script")
+    output = run_interactive_script(pid, script)
+
+    return render(request, 'editor-response.html', output)
+    #return HttpResponse(json.dumps(output))
+    #return HttpResponse("success")
 
 def run_command(proc, commands):
     for cmd in commands:
