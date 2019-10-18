@@ -20,7 +20,7 @@ jQuery(function($) {
   }
   var bno = 1;
 
-  function add_input_box(type, source) {
+  function add_input_box(type, source, result) {
 	 inputboxli = '<li class="input-box" id="ibid_'+bno+'">' +
 		  '<ul class="input-box-heading item-head-tools list-unstyled">' +
 		  '<li id="mover-tool" class="item-tool"><span class="glyphicon glyphicon-move"></span></li>' +
@@ -49,56 +49,10 @@ jQuery(function($) {
 		  '<div class="input-box-editor">' +
 		  '<textarea class="text-editor" rows=1>' + source + '</textarea>' +
 		  '</div>' +
-		  '<div id="ibid_pre_'+bno+'" class="output-preview"></div>' +			
+		  '<div id="ibid_pre_'+bno+'" class="output-preview">' + result + '</div>' +			
 		  '</li>';
 
     $('#draggablePanelList').append(inputboxli);
-
-	/*
-	$('.delete-block-item').click(function() {
-		$(this).closest("li.input-box").remove();
-	});
-
-    $('.text-editor').keydown(function (e) {
-		if (e.keyCode == 9){
-            var val = this.value,
-			start = this.selectionStart,
-			end = this.selectionEnd;
-
-            // set textarea value to: text before caret + tab + text after caret
-            this.value = val.substring(0, start) + '\t' + val.substring(end);
-
-            // put caret at right position again
-            this.selectionStart = this.selectionEnd = start + 1;
-
-            // prevent the focus lose
-            return false;
-		}
-
-		if (e.ctrlKey == 13) {
-
-		}
-
-		if (e.ctrlKey && e.keyCode == 13) {
-
-		}
-
-		if (e.keyCode == 13) {
-			if(e.shiftKey){
-				alert("Query!!");
-				e.preventDefault();
-			} else {
-
-			}
-		}
-    });
-
-    $(".type-select").click(function() {
-      selected = $(this).attr("data-value");
-      $(this).closest("li.item-tool").find(".item-type").html(selected);
-      //alert($(this).attr("data-value"));
-    });
-	*/
 
 	add_input_box_event(bno);
 	bno++;
@@ -158,7 +112,8 @@ jQuery(function($) {
   {
 	var script = $.parseJSON(script_json);
 	$.each(script, function(i,d) {
-	  add_input_box(d.type, d.source);
+		if(d.result) add_input_box(d.type, d.source, d.result);
+		else  add_input_box(d.type, d.source, "");
 	});
   }
   catch (err)
@@ -188,9 +143,11 @@ jQuery(function($) {
     panelList.find(".input-box").each(function(index) {
       editor = $(this).find(".text-editor");
       type = $(this).find(".item-type");
+	  result = $(this).find(".output-preview");
       listData.push({
         "type": type.text(),
-        "source": editor.val()
+        "source": editor.val(),
+		"result": result.html()
       });
 	  $('#json_value').html(JSON.stringify(listData));
     });

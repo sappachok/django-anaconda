@@ -46,6 +46,7 @@
 
 			    function run_response(inbid, data)
 			    {
+					$("#ibid_pre_"+inbid).html("<b>L</b>oading...");
 					$.ajaxSetup({
 						beforeSend: function(xhr, settings) {
 							if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -146,7 +147,7 @@
 				<button type="button" class="btn clearsession-btn btn-basic">Clear session</button>
 			</p>
 			</div>
-			<div class="col-lg-6">
+			<div class="col-lg-12">
 				<p>
 					<button type="button" class="btn submit-btn btn-primary">Save</button>
 					<button type="button" class="btn preview-btn btn-primary">Preview</button>
@@ -170,10 +171,12 @@
 				</form>
 				{% endblock %}
 			</div>
+			<!--
 			<div class="col-lg-6">
 				<h2>Result</h2>
 				<div id="output_preview"></div>
 			</div>
+			-->
         </div>
     </div>
     <!-- /.content -->

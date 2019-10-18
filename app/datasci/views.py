@@ -18,7 +18,7 @@ import psycopg2
 
 from io import StringIO
 import time
-from datasci.src import multicommand, clientsocket, run_multiscript, run_multiscript2, interact_subprocess
+from datasci.src import multicommand, clientsocket, run_multiscript, run_multiscript2, run_multiscript3, interact_subprocess
 
 import fcntl
 import select
@@ -274,9 +274,10 @@ def run_interactive_script(pid, script):
     cmd.append('import dill')
     cmd.append('import pickle')
     cmd.append('from datasci.src import util_interactive')
-    cmd.append('_matpotimages_lastoutput = -1')
     cmd.append("if os.path.isfile('tmp/session_{}.pkl'):".format(pid))
     cmd.append("    dill.load_session('tmp/session_{}.pkl')".format(pid))
+    cmd.append('else:')
+    cmd.append('    _matpotimages_lastoutput = -1')
 
     type = "script"
     cmd.append("print(\"add_block({})\")\n".format(type))
@@ -286,16 +287,16 @@ def run_interactive_script(pid, script):
     cmd.append('_matpotimages = util_interactive.printfigs("fig", None, ".png")')
     cmd.append('if _matpotimages:')
     cmd.append('    for im in _matpotimages:')
-    cmd.append('        if im["no"] > _matpotimages_lastoutput:')
-    cmd.append('            print(im["src"])')
-    cmd.append('            _matpotimages_lastoutput = im["no"]')
+    cmd.append('        print(im["src"])')
+    cmd.append('        _matpotimages_lastoutput = im["no"]')
 
+    # cmd.append('print(_matpotimages_lastoutput)')
     cmd.append("print(\"end_block()\")\n")
 
 
     cmd.append("dill.dump_session('tmp/session_{}.pkl')".format(pid))
 
-    multiscript = run_multiscript.Multiscript()
+    multiscript = run_multiscript3.Multiscript()
     output, error = multiscript.run(cmd)
 
     if error == [[]]:
