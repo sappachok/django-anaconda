@@ -65,6 +65,7 @@
 							type: 'post', // GET or POST
 							url: '{% url "editor-runresponse" project_info.1 %}', // the file to call
 							success: function(response) { // on success..
+								$('#form1').submit();
 								//$('#DIV_CONTAINING_FORM').html(response); // update the DIV
 								$("#ibid_pre_"+inbid).html(response);
 								//console.log(response);
