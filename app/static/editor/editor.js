@@ -118,7 +118,7 @@ jQuery(function($) {
   }
   catch (err)
   {
-	add_input_box("script", "");
+	add_input_box("script", "", "");
   }
 
   autosize(document.querySelectorAll('textarea'));
