@@ -124,7 +124,7 @@ jQuery(function($) {
   autosize(document.querySelectorAll('textarea'));
 
   $(".add-console-btn").click(function() {
-    add_input_box("script","");
+    add_input_box("script","","");
     autosize(document.querySelectorAll('textarea'));
   });
 
