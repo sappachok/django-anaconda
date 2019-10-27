@@ -18,7 +18,7 @@ import psycopg2
 
 from io import StringIO
 import time
-from datasci.src import multicommand, clientsocket, run_multiscript, run_multiscript2, run_multiscript3, interact_subprocess
+from datasci.src import multicommand, clientsocket, run_multiscript, run_multiscript2, run_multiscript3, run_multiscript4, interact_subprocess
 
 import fcntl
 import select
@@ -268,6 +268,15 @@ def editor(request, pid=""):
     
     return render(request, 'python-editor.html', data)
 
+def run_script(script):
+    cmd = []
+
+    cmd.append(script)
+    multiscript = run_multiscript4.Multiscript()
+    output, error = multiscript.run(cmd)
+
+    return output
+
 def run_interactive_script(pid, script):
     cmd = []
     cmd.append('import os.path')
@@ -355,6 +364,130 @@ def prepaire_command(cmd, sp='\r\n'):
         data.append(c)
 
     return data
+
+def dashboard(request):
+    data = {}
+    return render(request, 'dashboard.html', data)
+
+def dashboard_sample(request):
+    data = {}
+    return render(request, 'dashboard-sample.html', data)
+
+def chart_load():
+    return True
+
+def chart_editor_list(request):
+    path = 'workdatas/chart_scripts/'
+
+    lists = os.listdir(path)
+    folder = []
+    for item in lists:
+        if os.path.isdir(os.path.join(path, item)):
+            folder.append(item)
+
+    data = {'page_title': 'Chart Lists', 'project': folder}
+
+    return render(request, 'chart-editor-list.html', data)
+
+def chart_editor(request, pid=""):
+    if pid:
+        path = "workdatas/chart_scripts/{}".format(pid)
+
+        f = open(os.path.join(path, "chart.py"), "r")
+        pythoncode = f.read()
+        f.close()
+
+        '''
+        f = open(os.path.join(path, "chart.html"), "r")
+        htmlcode = f.read()
+        f.close()
+
+        f = open(os.path.join(path, "chart.js"), "r")
+        jscode = f.read()
+        f.close()
+        '''
+        mode = "edit"
+    else:
+        mode = "add"
+        pythoncode = ""
+        # htmlcode = ""
+        # jscode = ""
+
+    dateTimeObj = datetime.now()
+    timestampStr = dateTimeObj.strftime("%d%b%Y%H%M%S%f)")
+    data = {'blog_title': 'Python Editor', 'now':timestampStr,
+            'pid':pid,
+            'mode':mode,
+            'pythoncode':pythoncode,
+            # 'htmlcode':htmlcode,
+            # 'jscode':jscode,
+        }
+
+    return render(request, 'chart-editor.html', data)
+
+def chart_editor_process(request):
+    pid = request.POST.get("pid")
+    pythoncode = request.POST.get("pythoncode")
+    # htmlcode = request.POST.get("htmlcode")
+    # jscode = request.POST.get("jscode")
+
+    #commands = prepaire_command(cmd)
+
+    try:
+        # PythonLab.objects.filter(name=pid).update(script=cmd)
+        path = "workdatas/chart_scripts/{}".format(pid)
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        f = open(os.path.join(path, "chart.py"), "w")
+        f.write(pythoncode)
+        f.close()
+        '''
+        f = open(os.path.join(path, "chart.html"), "w")
+        f.write(htmlcode)
+        f.close()
+
+        f = open(os.path.join(path, "chart.js"), "w")
+        f.write(jscode)
+        f.close()
+        '''
+
+    except Exception as e:
+        return HttpResponse("Error : {0}".format(e))
+
+    return HttpResponse("OK")
+
+def chart_editor_preview(request, pid=""):
+    data = {'blog_title': 'Datasci App', 'pid': pid}
+    # pretty_data = db_output
+    # return HttpResponse(pretty_data, content_type="application/json")
+    return render(request, 'chart-editor-preview.html', data)
+
+def chart_dataset(request, pid=""):
+    if pid:
+        path = "workdatas/chart_scripts/{}".format(pid)
+
+        f = open(os.path.join(path, "chart.py"), "r")
+        pythoncode = f.read()
+        f.close()
+
+        chart_data = {}
+
+        try:
+            loc = {}
+            exec (pythoncode, globals(), loc)
+            chart_data = loc.get('chart_data')
+        except Exception as e:
+            print(str(e))
+        #jsondata = json.dumps(data[0])
+    else :
+        chart_data = {}
+
+    if not chart_data:
+        chart_data = {}
+    #return HttpResponse(data)
+    return JsonResponse(chart_data)
+
 
 def chartjs(request):
     data = {'blog_title': 'Datasci App'}

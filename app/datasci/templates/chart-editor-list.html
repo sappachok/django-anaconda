@@ -1,0 +1,27 @@
+{% load theme_tags %}
+{% load html_escape %}
+{% load view_tags %}
+
+{% header %}
+{% breadcrumb %}
+
+<section class="content">
+	<div class="row">
+		<!-- left column -->
+		<div class="col-sm-12">
+		  <!-- general form elements -->
+
+			<div class="box box-primary">
+			  <div class="box-body">
+  			  {% for p in project %}
+				<p><a href="{% url 'chart-editor' %}{{ p }}">{{ p }}</a></p>
+			  {% endfor %}
+
+			  </div>
+			</div>
+		</div>
+	</div>
+	<!-- /.content -->
+</section>
+
+{% footer %}

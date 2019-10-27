@@ -1,0 +1,364 @@
+{% load staticfiles %}
+{% load theme_tags %}
+{% load html_escape %}
+
+{% header %}
+
+<link rel="stylesheet" href="{% static "plugins/codemirror/lib/codemirror.css" %}">
+<link rel="stylesheet" href="{% static "plugins/codemirror/addon/hint/show-hint.css" %}">
+<link rel="stylesheet" href="{% static "plugins/codemirror/theme/duotone-dark.css" %}">
+<link rel="stylesheet" href="{% static "plugins/codemirror/theme/bespin.css" %}">
+<link rel="stylesheet" href="{% static "plugins/codemirror/theme/base16-dark.css" %}">
+
+<style>
+body {
+    min-width: 1200px;
+}
+.CodeMirror {
+    border-top: 1px solid #888;
+    border-bottom: 1px solid #888;
+    height: 450px;
+    background-color: #eeeeee;
+    font-size: 14px;
+}
+
+#main {
+    border: 1px solid #888;
+    margin-left: 420px;
+    height: 450px;
+    /*width: 75%;*/
+}
+
+.filetype-menu {
+    display: block;
+}
+
+.filetype-menu li {
+    float: left;
+    list-style-type: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-right: 5px;
+    border-top: 1px solid #aaaaaa;
+    border-left: 1px solid #aaaaaa;
+    border-right: 1px solid #aaaaaa;
+}
+
+.filetype-menu li.active {
+    background: #343a40;
+    color: #ffffff;
+}
+
+#preview_code {
+    height: 500px;
+}
+
+.chart-preview {
+	width:100%;
+	height: 450px;
+	background-color:white;
+}
+
+fieldset.form-group {
+    padding:20px;
+    border:1px solid #dddddd;
+}
+</style>
+
+{% block javascript %}
+
+<link rel="stylesheet" href="{% static 'editor/chart_editor.css' %}?{{ now }}"/>		
+
+<script type="text/javascript" src="{% static 'templates/admin-lte/bower_components/jquery/dist/jquery.min.js' %}"></script>
+
+{% csrf_token %}
+<script language="JavaScript">
+	var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+	function getCookie(name) {
+		var cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = jQuery.trim(cookies[i]);
+				// Check if this cookie string begin with the name we want
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+
+	function csrfSafeMethod(method) {
+		// these HTTP methods do not require CSRF protection
+		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+
+	$(document).ready(function() {
+		$('.submit-btn').click(function() {
+			if(!$('#pid').val()) {
+				alert("Please input project id:");
+				return false;
+			}
+
+			$('#form1').submit();
+		});
+
+		$('#form1').submit(function() { // catch the form's submit event
+			$('#pythoncode').val(PythonEditor.getValue());
+			$('#htmlcode').val(htmleditor.getValue());
+			$('#jscode').val(jseditor.getValue());
+			$('#saveBtn').addClass("disabled");
+
+			$.ajaxSetup({
+				beforeSend: function(xhr, settings) {
+					if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+						xhr.setRequestHeader("X-CSRFToken", csrftoken);
+					}
+				}
+			});
+			try {
+				//editor();
+				//form_get_query();
+
+				$.ajax({ // create an AJAX call...
+					data: $(this).serialize(), // get the form data
+					csrfmiddlewaretoken: csrftoken,
+					type: $(this).attr('method'), // GET or POST
+					url: $(this).attr('action'), // the file to call
+					success: function(response) { // on success..
+						//$('#DIV_CONTAINING_FORM').html(response); // update the DIV 
+						$('#saveBtn').removeClass("disabled");
+						console.log(response);
+
+						if($('#mode').val()=="add") {
+							alert("Create project success.");
+							window.location = '{% url "chart-editor" %}' + $('#pid').val();
+						} else {
+							$('iframe').each(function() {
+							  this.contentWindow.location.reload(true);
+							});
+							//dataset.contentWindow.location.reload(true);
+							//chartpreview.contentWindow.location.reload(true);
+						}
+						//var result = $('#result');
+						//result.html("");
+					}
+				});
+			} catch(e) {
+				console.log(e);
+			}
+
+			return false;
+		});
+
+		$('.preview-btn').click(function() {
+			$('#chart_preview_tab').click();
+		});
+	});
+</script>
+
+{% endblock %}
+
+
+<section class="content">
+    <div class="row">
+        <!-- left column -->
+        <div class="col-sm-12">
+			<form id="form1" action='{% url "chart-editor-process" %}' method="post">
+			<input id="mode" type="hidden" name="mode" value="{{ mode }}">
+            <h1>Chart Editor</h1>
+			<p>
+				<label>Project</label>
+				<input type="text" id="pid" name="pid" class="form-control" value="{{ pid }}">
+			</p>
+			<div>
+			<p>
+				<div class="filetype-menu float-left">
+					<ul>
+						<li id="python_code_sheet" class="code-sheet active">Python</li>
+						<!--
+						<li id="html_code_sheet" class="code-sheet">HTML</li>
+						<li id="js_code_sheet" class="code-sheet">JS</li>
+						-->
+						<li id="dataset_tab" class="code-sheet">Dataset</li>
+						<li id="chart_preview_tab" class="code-sheet">Preview</li>
+					</ul>
+				</div>
+				<div class="clearfix"></div>
+				<div id="texteditor">
+					<div id="test"></div>
+					<textarea id="pythoncode" name="pythoncode">{{ pythoncode }}</textarea>
+					<textarea id="htmlcode" name="htmlcode" style="display:none">{{ htmlcode }}</textarea>
+					<textarea id="jscode" name="jscode" style="display:none">{{ jscode }}</textarea>
+					<div id="dataset" style="display:none"><iframe src="{% url "chart-dataset" %}{{ pid }}" class="chart-preview"></iframe></div>
+					<div id="chartpreview" style="display:none"><iframe src="{% url "chart-editor-preview" %}{{ pid }}" class="chart-preview"></iframe></div>
+				</div>
+			</p>
+			<div class="clearfix"></div>
+			<p>
+				<button id="saveBtn" type="button" class="btn submit-btn btn-primary">Save and Run</button>
+				<!--<button id="query_btn" type="button" class="btn btn-primary">Query</button>-->
+				<button type="button" class="btn preview-btn btn-primary">Preview</button>
+			</p>
+			</form>
+			</div>
+			<!--
+			<div class="col-lg-6">
+				<h2>Result</h2>
+				<div id="output_preview"></div>
+			</div>
+			-->
+        </div>
+    </div>
+    <!-- /.content -->
+</section>
+{% footer %}
+
+<script type="text/javascript" src="{% static 'editor/editor.js' %}?{{ now }}"></script>					
+<script type="text/javascript" src="{% static 'editor/autosize.js' %}"></script>
+
+<script type="text/javascript" src="{% static "plugins/codemirror/lib/codemirror-custom.js" %}"></script>
+<script type="text/javascript" src="{% static "plugins/codemirror/addon/hint/show-hint.js" %}"></script>
+<script type="text/javascript" src="{% static "plugins/codemirror/addon/hint/xml-hint.js" %}"></script>
+<script type="text/javascript" src="{% static "plugins/codemirror/addon/hint/html-hint.js" %}"></script>
+<script type="text/javascript" src="{% static "plugins/codemirror/mode/xml/xml.js" %}"></script>
+<script type="text/javascript" src="{% static "plugins/codemirror/mode/javascript/javascript.js" %}"></script>
+<script type="text/javascript" src="{% static "plugins/codemirror/mode/css/css.js" %}"></script>
+<script type="text/javascript" src="{% static "plugins/codemirror/mode/python/python.js" %}"></script>
+
+<script type="text/javascript" src="{% static "plugins/codemirror/mode/htmlmixed/htmlmixed.js" %}"></script>
+
+<script>
+    var htmleditor = "";
+    var PythonEditor = "";
+    var jseditor = "";
+    var dataset = $('#dataset');
+	var chartpreview = $('#chartpreview');
+
+    function indent_tab(code, num) {
+        rows = code.split("\n");
+
+        indentcode = "";
+        $.each(rows, function(i, k) {
+            indent = "";
+            for(t=1; t<=num; t++) {
+                indent += "\t";
+            }
+            indentcode += indent + k + "\n"                
+        })
+
+        return indentcode;
+    }
+
+    var loader = 1;
+    function load_project() {
+        initHtmlEditor();
+        initPythonEditor();
+        initJsEditor();
+    }
+
+    var extraKeyOptions = {
+        "Ctrl-Space": "autocomplete",
+        "Ctrl-S": function(instance) { $("#saveBtn").click(); },
+        "Ctrl-/": "undo"
+    }
+
+    function initHtmlEditor() {
+        htmleditor = CodeMirror.fromTextArea(document.getElementById("htmlcode"), {
+            lineNumbers: true,
+            extraKeys: extraKeyOptions
+        });
+        htmleditor.hide();
+    };
+
+    function initPythonEditor() {
+        PythonEditor = CodeMirror.fromTextArea(document.getElementById("pythoncode"), {
+            mode: {name: "python",
+               version: 3,
+               singleLineStringErrors: false},
+			lineNumbers: true,
+			indentUnit: 4,
+			matchBrackets: true
+        });
+    };
+
+    function initJsEditor() {
+        jseditor = CodeMirror.fromTextArea(document.getElementById("jscode"), {
+            lineNumbers: true,
+            extraKeys: extraKeyOptions,
+            mode: {
+                name: "javascript",
+                globalVars: true
+            }
+        });
+
+        jseditor.hide();
+    };
+
+    $(document).ready(function(e) {
+
+        function editor_active(editor, sheet) {
+            editor.show();
+            sheet.addClass("active");
+        }
+
+        function editor_unactive(editor, sheet) {
+            //editor.hide();
+			editor.hide();
+            sheet.removeClass("active");
+        }
+
+        function view_active(view) {                
+            view.addClass("active");
+        }
+
+        function view_unactive(view) {                
+            view.removeClass("active");
+        } 
+        
+        $('.code-sheet').click(function() {
+            sheetid = $(this).attr("id");
+            if (sheetid == "html_code_sheet") {
+                editor_unactive(chartpreview, $("#chart_preview_tab"));
+                editor_unactive(dataset, $("#dataset_tab"));
+                editor_unactive(jseditor, $("#js_code_sheet"));
+                editor_unactive(PythonEditor, $("#python_code_sheet"));
+                editor_active(htmleditor, $("#html_code_sheet"));
+                
+            } else if (sheetid == "python_code_sheet") {
+                editor_unactive(chartpreview, $("#chart_preview_tab"));
+                editor_unactive(dataset, $("#dataset_tab"));
+                editor_unactive(jseditor, $("#js_code_sheet"));
+                editor_unactive(htmleditor, $("#html_code_sheet"));
+                editor_active(PythonEditor, $("#python_code_sheet"));
+            } else if (sheetid == "js_code_sheet") {
+                editor_unactive(chartpreview, $("#chart_preview_tab"));
+                editor_unactive(dataset, $("#dataset_tab"));
+                editor_unactive(htmleditor, $("#html_code_sheet"));
+                editor_unactive(PythonEditor, $("#python_code_sheet"));
+                editor_active(jseditor, $("#js_code_sheet"));
+            } else if(sheetid == "chart_preview_tab") {
+                editor_active(chartpreview, $("#chart_preview_tab"));
+                editor_unactive(dataset, $("#dataset_tab"));
+                editor_unactive(htmleditor, $("#html_code_sheet"));
+                editor_unactive(PythonEditor, $("#python_code_sheet"));
+                editor_unactive(jseditor, $("#js_code_sheet"));
+            } else if(sheetid == "dataset_tab") {
+                editor_unactive(chartpreview, $("#chart_preview_tab"));
+                editor_unactive(htmleditor, $("#html_code_sheet"));
+                editor_unactive(PythonEditor, $("#python_code_sheet"));
+                editor_unactive(jseditor, $("#js_code_sheet"));
+                editor_active(dataset, $("#dataset_tab"));
+			}
+        });
+        
+        $("#saveBtn").click(function() {
+
+        });
+
+		load_project();
+});
+</script>
