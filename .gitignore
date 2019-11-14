@@ -18,3 +18,4 @@ local_settings.py
 /app/tmp/*
 /app/workdatas/*
 /app/config/*
+/app/exports/*
