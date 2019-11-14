@@ -18,7 +18,7 @@ import psycopg2
 
 from io import StringIO
 import time
-from datasci.src import multicommand, clientsocket, run_multiscript, run_multiscript2, run_multiscript3, run_multiscript4, interact_subprocess
+from datasci.src import multicommand, clientsocket, run_multiscript, run_multiscript2, run_multiscript3, run_multiscript4, run_multiscript5, interact_subprocess
 
 import fcntl
 import select
@@ -26,6 +26,7 @@ import time
 from datetime import datetime
 
 from editor.models import Invite, PythonCode, PythonLab
+from datasci.src.conn_oracle import oraconn
 
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -34,6 +35,7 @@ connection = psycopg2.connect(user="postgres",
                                host="db",
                                port="5432",
                                database="postgres")
+
 # python manage.py shell
 # Create your views here.
 def datasci(request):
@@ -365,9 +367,14 @@ def prepaire_command(cmd, sp='\r\n'):
 
     return data
 
-def dashboard(request):
+def dashboard(request, page=''):
     data = {}
-    return render(request, 'dashboard.html', data)
+    if page == 'person':
+        return render(request, 'dashboards/person.html', data)
+    elif page == 'exam':
+        return render(request, 'dashboards/exam.html', data)
+    else :
+        return render(request, 'dashboards/sample.html', data)
 
 def dashboard_sample(request):
     data = {}
@@ -376,36 +383,70 @@ def dashboard_sample(request):
 def chart_load():
     return True
 
-def chart_editor_list(request):
+def chart_editor_list(request, gid=""):
     path = 'workdatas/chart_scripts/'
 
     lists = os.listdir(path)
     folder = []
-    for item in lists:
-        if os.path.isdir(os.path.join(path, item)):
-            folder.append(item)
+    if gid:
+        for item in lists:
+            if os.path.isdir(os.path.join(path, item)):
+                folder.append(item)
+    else:
+        for item in lists:
+            if os.path.isdir(os.path.join(path, item)):
+                folder.append(item)
 
-    data = {'page_title': 'Chart Lists', 'project': folder}
+    data = {'page_title': 'Chart Lists', 'project': folder, 'group': gid}
 
     return render(request, 'chart-editor-list.html', data)
 
-def chart_editor(request, pid=""):
-    if pid:
-        path = "workdatas/chart_scripts/{}".format(pid)
+def chart_editor_create_group(request):
+    dateTimeObj = datetime.now()
+    timestampStr = dateTimeObj.strftime("%d%b%Y%H%M%S%f)")
+
+    data = {'page_title': 'Chart Lists', 'now': timestampStr}
+
+    return render(request, 'chart-editor-create-group.html', data)
+
+def chart_editor_create_group_process(request):
+    gid = request.POST.get("group")
+
+    try:
+        # PythonLab.objects.filter(name=pid).update(script=cmd)
+        path = "workdatas/chart_scripts/{}".format(gid)
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        return HttpResponse("OK")
+    except Exception as e:
+        return HttpResponse("Error : {0}".format(e))
+
+def chart_editor(request, gid="", pid=""):
+    if not pid:
+        path = 'workdatas/chart_scripts/{}/'.format(gid)
+
+        lists = os.listdir(path)
+        folder = []
+        if gid:
+            for item in lists:
+                if os.path.isdir(os.path.join(path, item)):
+                    folder.append(item)
+        else:
+            for item in lists:
+                if os.path.isdir(os.path.join(path, item)):
+                    folder.append(item)
+
+        data = {'page_title': 'Chart Lists', 'project': folder, 'group': gid}
+
+        return render(request, 'chart-editor-list.html', data)
+    elif gid:
+        path = "workdatas/chart_scripts/{}/{}".format(gid, pid)
 
         f = open(os.path.join(path, "chart.py"), "r")
         pythoncode = f.read()
         f.close()
 
-        '''
-        f = open(os.path.join(path, "chart.html"), "r")
-        htmlcode = f.read()
-        f.close()
-
-        f = open(os.path.join(path, "chart.js"), "r")
-        jscode = f.read()
-        f.close()
-        '''
         mode = "edit"
     else:
         mode = "add"
@@ -417,6 +458,7 @@ def chart_editor(request, pid=""):
     timestampStr = dateTimeObj.strftime("%d%b%Y%H%M%S%f)")
     data = {'blog_title': 'Python Editor', 'now':timestampStr,
             'pid':pid,
+            'gid':gid,
             'mode':mode,
             'pythoncode':pythoncode,
             # 'htmlcode':htmlcode,
@@ -425,47 +467,75 @@ def chart_editor(request, pid=""):
 
     return render(request, 'chart-editor.html', data)
 
+def chart_editor_create(request, gid=""):
+    mode = "add"
+    pythoncode = ""
+
+    dateTimeObj = datetime.now()
+    timestampStr = dateTimeObj.strftime("%d%b%Y%H%M%S%f)")
+    data = {'blog_title': 'Python Editor', 'now':timestampStr,
+            'pid':'',
+            'gid':gid,
+            'mode':mode,
+            'pythoncode':pythoncode,
+        }
+
+    return render(request, 'chart-editor.html', data)
+
 def chart_editor_process(request):
     pid = request.POST.get("pid")
+    gid = request.POST.get("gid")
     pythoncode = request.POST.get("pythoncode")
-    # htmlcode = request.POST.get("htmlcode")
-    # jscode = request.POST.get("jscode")
-
-    #commands = prepaire_command(cmd)
 
     try:
         # PythonLab.objects.filter(name=pid).update(script=cmd)
-        path = "workdatas/chart_scripts/{}".format(pid)
+        path = "workdatas/chart_scripts/{}/{}".format(gid,pid)
         if not os.path.exists(path):
             os.mkdir(path)
 
         f = open(os.path.join(path, "chart.py"), "w")
         f.write(pythoncode)
         f.close()
-        '''
-        f = open(os.path.join(path, "chart.html"), "w")
-        f.write(htmlcode)
-        f.close()
-
-        f = open(os.path.join(path, "chart.js"), "w")
-        f.write(jscode)
-        f.close()
-        '''
 
     except Exception as e:
         return HttpResponse("Error : {0}".format(e))
 
     return HttpResponse("OK")
 
-def chart_editor_preview(request, pid=""):
-    data = {'blog_title': 'Datasci App', 'pid': pid}
+def chart_editor_debug(request, gid="", pid=""):
+    output = {}
+    cmd = []
+
+    if pid:
+        path = "workdatas/chart_scripts/{}/{}".format(gid, pid)
+
+        f = open(os.path.join(path, "chart.py"), "r")
+        pythoncode = f.read()
+        f.close()
+
+        cmd.append(pythoncode)
+        multiscript = run_multiscript5.Multiscript()
+        output, error = multiscript.run(cmd)
+
+    data = {'blog_title': 'Datasci App', 'gid': gid, 'pid': pid, 'output': output, 'error': error}
+
+    return render(request, 'chart-editor-debug.html', data)
+
+def chart_editor_preview(request, gid="", pid=""):
+    data = {'blog_title': 'Datasci App', 'gid': gid, 'pid': pid}
     # pretty_data = db_output
     # return HttpResponse(pretty_data, content_type="application/json")
     return render(request, 'chart-editor-preview.html', data)
 
-def chart_dataset(request, pid=""):
+def chart_dataset(request, pid="", gid=""):
+
+    if request.GET.get("exam_type"):
+        param = request.GET
+    else:
+        param = {}
+
     if pid:
-        path = "workdatas/chart_scripts/{}".format(pid)
+        path = "workdatas/chart_scripts/{}/{}".format(gid,pid)
 
         f = open(os.path.join(path, "chart.py"), "r")
         pythoncode = f.read()
@@ -475,7 +545,7 @@ def chart_dataset(request, pid=""):
 
         try:
             loc = {}
-            exec (pythoncode, globals(), loc)
+            exec (pythoncode, {"param": param}, loc)
             chart_data = loc.get('chart_data')
         except Exception as e:
             print(str(e))

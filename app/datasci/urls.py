@@ -8,8 +8,8 @@ from django.views.generic.base import TemplateView
 urlpatterns = [
     path('/', views.datasci, name='datasci'),
 
-    path('/dashboard/', views.dashboard, name='dashboard'),
-    path('/dashboard/sample', views.dashboard_sample, name='dashboard-sample'),
+    path('/dashboard/', views.dashboard_sample, name='dashboard'),
+    path('/dashboard/<str:page>/', views.dashboard, name='dashboard'),
 
     path('/project/<str:pid>/', views.project_ex, name='project'),
     path('/project_ex/<str:pid>/', views.project_ex2, name='project-ex'),
@@ -17,13 +17,27 @@ urlpatterns = [
     path('/project_session_clear/<str:pid>/', views.project_session_clear, name='project-session-clear'),
 
     path('/chart_editor_list', views.chart_editor_list, name='chart-editor-list'),
+    path('/chart_editor/create_group', views.chart_editor_create_group, name='chart-editor-create-group'),
+    path('/chart_editor/create_group_process', views.chart_editor_create_group_process, name='chart-editor-create-group-process'),
+
     path('/chart_editor/', views.chart_editor, name='chart-editor'),
-    path('/chart_editor/<str:pid>', views.chart_editor, name='chart-editor'),
+    path('/chart_editor/<str:gid>', views.chart_editor, name='chart-editor'),
+    path('/chart_editor/<str:gid>/<str:pid>', views.chart_editor, name='chart-editor'),
+
+
+
+    path('/chart_editor_create/', views.chart_editor_create, name='chart-editor-create'),
+    path('/chart_editor_create/<str:gid>', views.chart_editor_create, name='chart-editor-create'),
+
     path('/chart_editor_process/', views.chart_editor_process, name='chart-editor-process'),
     path('/chart_editor_preview/', views.chart_editor_preview, name='chart-editor-preview'),
-    path('/chart_editor_preview/<str:pid>', views.chart_editor_preview, name='chart-editor-preview'),
+    path('/chart_editor_preview/<str:gid>/<str:pid>', views.chart_editor_preview, name='chart-editor-preview'),
+    path('/chart_editor_debug/', views.chart_editor_debug, name='chart-editor-debug'),
+    path('/chart_editor_debug/<str:gid>/<str:pid>', views.chart_editor_debug, name='chart-editor-debug'),
+
     path('/chart_dataset/', views.chart_dataset, name='chart-dataset'),
     path('/chart_dataset/<str:pid>', views.chart_dataset, name='chart-dataset'),
+    path('/chart_dataset/<str:gid>/<str:pid>', views.chart_dataset, name='chart-dataset'),
 
 
     path('/editor/<str:pid>/', views.editor, name='editor'),

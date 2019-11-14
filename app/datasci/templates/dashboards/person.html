@@ -1,0 +1,72 @@
+{% load staticfiles %}
+{% load theme_tags %}
+{% load html_escape %}
+{% load view_tags %}
+
+{% header %}
+{% breadcrumb %}
+
+<section class="content">
+	<div class="row">
+
+		<div class="col-lg-4">
+			<div class="box box-primary">
+			  <div class="box-body">
+				<canvas class="dashboard-chart" data-group="person" data-pid="person-type-chart" height="300"></canvas>
+			  </div>
+			</div>
+		</div>
+
+		<div class="col-lg-4">
+			<div class="box box-primary">
+			  <div class="box-body">
+				<canvas class="dashboard-chart" data-group="person" data-pid="person-depart-chart" height="300"></canvas>
+			  </div>
+			</div>
+		</div>
+
+		<div class="col-lg-12">
+			<div class="box box-primary">
+			  <div class="box-body">
+				<canvas class="dashboard-chart" data-group="person" data-pid="person-type-division-stack-chart"></canvas>
+			  </div>
+			</div>
+		</div>
+
+	</div>
+</section>
+
+{% footer %}
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script type="text/javascript" src="{% static "js/chartjs/utils.js" %}"></script>
+
+<script>
+$(document).ready(function() {
+	var ctx = [];
+
+	$(".dashboard-chart").each(function() {
+		cid = $(this).attr('id');
+		pid = $(this).attr('data-pid');
+		gid = $(this).attr('data-group');
+
+		show_chart($(this), pid, gid);
+	});
+
+	function show_chart(chart, pid, gid="") {
+		//alert('{% url "chart-dataset" %}' + pid);
+		if(gid) {
+			$.get('{% url "chart-dataset" %}' + gid + "/" + pid, function(data) {
+				ctx[pid] = chart.get(0).getContext("2d");
+				new Chart(ctx[pid], data);
+			});
+		} else {
+			$.get('{% url "chart-dataset" %}' + pid, function(data) {
+				ctx[pid] = chart.get(0).getContext("2d");
+				new Chart(ctx[pid], data);
+			});
+		}
+	}
+
+});
+</script>

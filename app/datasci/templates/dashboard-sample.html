@@ -11,7 +11,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="test" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="test" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -19,7 +19,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="bar-chart" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="bar-chart" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="pine-chart" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="pine-chart" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -35,7 +35,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="chart-line-2" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="chart-line-2" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -43,7 +43,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="radar-chart" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="radar-chart" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -51,7 +51,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="polar-chart" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="polar-chart" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -59,7 +59,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="donut-chart" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="donut-chart" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -67,7 +67,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="bar-chart-herizontal" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="bar-chart-herizontal" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -75,7 +75,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="bar-chart-grouped" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="bar-chart-grouped" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -83,7 +83,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="mixed-chart" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="mixed-chart" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -91,7 +91,7 @@
 		<div class="col-lg-4">
 			<div class="box box-primary">
 			  <div class="box-body">
-				<canvas class="dashboard-chart" data-pid="buble-chart" width="500" height="400"></canvas>
+				<canvas class="dashboard-chart" data-group="examples" data-pid="buble-chart" width="500" height="400"></canvas>
 			  </div>
 			</div>
 		</div>
@@ -111,15 +111,24 @@ $(document).ready(function() {
 	$(".dashboard-chart").each(function() {
 		cid = $(this).attr('id');
 		pid = $(this).attr('data-pid');
-		show_chart($(this), pid);
+		gid = $(this).attr('data-group');
+
+		show_chart($(this), pid, gid);
 	});
 
-	function show_chart(chart, pid) {
+	function show_chart(chart, pid, gid="") {
 		//alert('{% url "chart-dataset" %}' + pid);
-		$.get('{% url "chart-dataset" %}' + pid, function(data) {
-			ctx[pid] = chart.get(0).getContext("2d");
-			new Chart(ctx[pid], data);
-		});
+		if(gid) {
+			$.get('{% url "chart-dataset" %}' + gid + "/" + pid, function(data) {
+				ctx[pid] = chart.get(0).getContext("2d");
+				new Chart(ctx[pid], data);
+			});
+		} else {
+			$.get('{% url "chart-dataset" %}' + pid, function(data) {
+				ctx[pid] = chart.get(0).getContext("2d");
+				new Chart(ctx[pid], data);
+			});
+		}
 	}
 
 });

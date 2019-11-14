@@ -1,0 +1,95 @@
+{% load staticfiles %}
+{% load theme_tags %}
+{% load html_escape %}
+{% load view_tags %}
+
+{% header %}
+{% breadcrumb %}
+
+{% block javascript %}
+
+<link rel="stylesheet" href="{% static 'editor/chart_editor.css' %}?{{ now }}"/>		
+
+<script type="text/javascript" src="{% static 'templates/admin-lte/bower_components/jquery/dist/jquery.min.js' %}"></script>
+
+{% csrf_token %}
+<script language="JavaScript">
+	var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+	function getCookie(name) {
+		var cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = jQuery.trim(cookies[i]);
+				// Check if this cookie string begin with the name we want
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+
+	function csrfSafeMethod(method) {
+		// these HTTP methods do not require CSRF protection
+		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+
+	$(document).ready(function() {
+		$('#form1').submit(function() { // catch the form's submit event
+			$.ajaxSetup({
+				beforeSend: function(xhr, settings) {
+					if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+						xhr.setRequestHeader("X-CSRFToken", csrftoken);
+					}
+				}
+			});
+
+			try {
+				//editor();
+				//form_get_query();
+
+				$.ajax({ // create an AJAX call...
+					data: $(this).serialize(), // get the form data
+					csrfmiddlewaretoken: csrftoken,
+					type: $(this).attr('method'), // GET or POST
+					url: $(this).attr('action'), // the file to call
+					success: function(response) { // on success..
+						if(response=="OK") {
+							alert("Create group success.");
+							window.location = '{% url "chart-editor" %}' + $('#gid').val();
+						}
+					}
+				});
+			} catch(e) {
+				console.log(e);
+			}
+
+			return false;
+		});
+
+	});
+</script>
+
+{% endblock %}
+
+<section class="content">
+	<div class="row">
+		<!-- left column -->
+		<div class="col-sm-12">
+			<form id="form1" action='{% url "chart-editor-create-group-process" %}' method="post">
+			<p>
+				<input id="gid" type="text" name="group" class="form-control">
+			</p>
+			<p>
+				<button type="submit" name="create" class="btn btn-primary">Create</button>
+			</p>
+			</form>
+		</div>
+	</div>
+	<!-- /.content -->
+</section>
+
+{% footer %}

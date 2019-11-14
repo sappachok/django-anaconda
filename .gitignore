@@ -16,3 +16,5 @@ local_settings.py
 #django-datasci
 /app/datasci/datasets/*
 /app/tmp/*
+/app/workdatas/*
+/app/config/*

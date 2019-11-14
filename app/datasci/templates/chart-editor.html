@@ -135,7 +135,7 @@ fieldset.form-group {
 
 						if($('#mode').val()=="add") {
 							alert("Create project success.");
-							window.location = '{% url "chart-editor" %}' + $('#pid').val();
+							window.location = '{% url "chart-editor" %}' + $('#gid').val() + "/" + $('#pid').val();
 						} else {
 							$('iframe').each(function() {
 							  this.contentWindow.location.reload(true);
@@ -154,6 +154,11 @@ fieldset.form-group {
 			return false;
 		});
 
+		$('.debug-btn').click(function() {
+			$('#form1').submit();
+			$('#datadebug_tab').click();
+		});
+
 		$('.preview-btn').click(function() {
 			$('#chart_preview_tab').click();
 		});
@@ -167,8 +172,12 @@ fieldset.form-group {
     <div class="row">
         <!-- left column -->
         <div class="col-sm-12">
+			<p>
+				<a href='{% url "chart-editor" %}{{ gid }}' class="btn btn-primary">Back</a>
+			</p>
 			<form id="form1" action='{% url "chart-editor-process" %}' method="post">
 			<input id="mode" type="hidden" name="mode" value="{{ mode }}">
+			<input id="gid" type="hidden" name="gid" value="{{ gid }}">
             <h1>Chart Editor</h1>
 			<p>
 				<label>Project</label>
@@ -185,6 +194,7 @@ fieldset.form-group {
 						-->
 						<li id="dataset_tab" class="code-sheet">Dataset</li>
 						<li id="chart_preview_tab" class="code-sheet">Preview</li>
+						<li id="datadebug_tab" class="code-sheet">Debug</li>
 					</ul>
 				</div>
 				<div class="clearfix"></div>
@@ -193,14 +203,16 @@ fieldset.form-group {
 					<textarea id="pythoncode" name="pythoncode">{{ pythoncode }}</textarea>
 					<textarea id="htmlcode" name="htmlcode" style="display:none">{{ htmlcode }}</textarea>
 					<textarea id="jscode" name="jscode" style="display:none">{{ jscode }}</textarea>
-					<div id="dataset" style="display:none"><iframe src="{% url "chart-dataset" %}{{ pid }}" class="chart-preview"></iframe></div>
-					<div id="chartpreview" style="display:none"><iframe src="{% url "chart-editor-preview" %}{{ pid }}" class="chart-preview"></iframe></div>
+					<div id="dataset" style="display:none"><iframe src="{% url "chart-dataset" %}{{ gid }}/{{ pid }}" class="chart-preview"></iframe></div>
+					<div id="chartpreview" style="display:none"><iframe src="{% url "chart-editor-preview" %}{{ gid }}/{{ pid }}" class="chart-preview"></iframe></div>
+					<div id="datadebug" style="display:none"><iframe src="{% url "chart-editor-debug" %}{{ gid }}/{{ pid }}" class="chart-preview"></iframe></div>
 				</div>
 			</p>
 			<div class="clearfix"></div>
 			<p>
 				<button id="saveBtn" type="button" class="btn submit-btn btn-primary">Save and Run</button>
 				<!--<button id="query_btn" type="button" class="btn btn-primary">Query</button>-->
+				<button type="button" class="btn debug-btn btn-info">Save and Debug</button>
 				<button type="button" class="btn preview-btn btn-primary">Preview</button>
 			</p>
 			</form>
@@ -237,6 +249,7 @@ fieldset.form-group {
     var jseditor = "";
     var dataset = $('#dataset');
 	var chartpreview = $('#chartpreview');
+    var datadebug = $('#datadebug');
 
     function indent_tab(code, num) {
         rows = code.split("\n");
@@ -322,6 +335,7 @@ fieldset.form-group {
         $('.code-sheet').click(function() {
             sheetid = $(this).attr("id");
             if (sheetid == "html_code_sheet") {
+                editor_unactive(datadebug, $("#datadebug_tab"));
                 editor_unactive(chartpreview, $("#chart_preview_tab"));
                 editor_unactive(dataset, $("#dataset_tab"));
                 editor_unactive(jseditor, $("#js_code_sheet"));
@@ -329,29 +343,40 @@ fieldset.form-group {
                 editor_active(htmleditor, $("#html_code_sheet"));
                 
             } else if (sheetid == "python_code_sheet") {
+                editor_unactive(datadebug, $("#datadebug_tab"));
                 editor_unactive(chartpreview, $("#chart_preview_tab"));
                 editor_unactive(dataset, $("#dataset_tab"));
                 editor_unactive(jseditor, $("#js_code_sheet"));
                 editor_unactive(htmleditor, $("#html_code_sheet"));
                 editor_active(PythonEditor, $("#python_code_sheet"));
             } else if (sheetid == "js_code_sheet") {
+                editor_unactive(datadebug, $("#datadebug_tab"));
                 editor_unactive(chartpreview, $("#chart_preview_tab"));
                 editor_unactive(dataset, $("#dataset_tab"));
                 editor_unactive(htmleditor, $("#html_code_sheet"));
                 editor_unactive(PythonEditor, $("#python_code_sheet"));
                 editor_active(jseditor, $("#js_code_sheet"));
             } else if(sheetid == "chart_preview_tab") {
+                editor_unactive(datadebug, $("#datadebug_tab"));
                 editor_active(chartpreview, $("#chart_preview_tab"));
                 editor_unactive(dataset, $("#dataset_tab"));
                 editor_unactive(htmleditor, $("#html_code_sheet"));
                 editor_unactive(PythonEditor, $("#python_code_sheet"));
                 editor_unactive(jseditor, $("#js_code_sheet"));
             } else if(sheetid == "dataset_tab") {
+                editor_unactive(datadebug, $("#datadebug_tab"));
                 editor_unactive(chartpreview, $("#chart_preview_tab"));
                 editor_unactive(htmleditor, $("#html_code_sheet"));
                 editor_unactive(PythonEditor, $("#python_code_sheet"));
                 editor_unactive(jseditor, $("#js_code_sheet"));
                 editor_active(dataset, $("#dataset_tab"));
+            } else if(sheetid == "datadebug_tab") {
+                editor_active(datadebug, $("#datadebug_tab"));
+                editor_unactive(chartpreview, $("#chart_preview_tab"));
+                editor_unactive(htmleditor, $("#html_code_sheet"));
+                editor_unactive(PythonEditor, $("#python_code_sheet"));
+                editor_unactive(jseditor, $("#js_code_sheet"));
+                editor_unactive(dataset, $("#dataset_tab"));
 			}
         });
         

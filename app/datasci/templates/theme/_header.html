@@ -346,8 +346,9 @@
             </span>
           </a>
           <ul class="treeview-menu">
-            <li class="active"><a href="{% url 'dashboard' %}"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
-            <li><a href="{% url 'dashboard-sample' %}"><i class="fa fa-circle-o"></i> Dashboard Sample</a></li>
+            <li><a href="{% url 'dashboard' %}"><i class="fa fa-circle-o"></i> Dashboard Sample</a></li>
+            <li class="active"><a href="{% url 'dashboard' %}person"><i class="fa fa-circle-o"></i> Person</a></li>
+            <li class="active"><a href="{% url 'dashboard' %}exam"><i class="fa fa-circle-o"></i> Online Exam</a></li>
           </ul>
         </li>
         <li class="treeview">
@@ -383,7 +384,7 @@
             </span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="{% url 'chart-editor' %}"><i class="fa fa-circle-o"></i> สร้างรายการใหม่</a></li>
+            <li><a href="{% url 'chart-editor-create-group' %}"><i class="fa fa-circle-o"></i> สร้างกลุ่ม</a></li>
             <li><a href="{% url 'chart-editor-list' %}"><i class="fa fa-circle-o"></i> แผนภูมิของฉัน</a></li>
           </ul>
         </li>
