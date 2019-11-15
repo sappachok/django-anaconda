@@ -20,7 +20,9 @@ ENV OCI_LIB_DIR=/opt/oracle/instantclient
 ENV OCI_INCLUDE_DIR=/opt/oracle/instantclient/sdk/include
 
 # INSTALL INSTANTCLIENT AND DEPENDENCIES
-RUN ./install-instantclient.sh
+# RUN ./install-instantclient.sh
+
+RUN ["/bin/bash","./install-instantclient.sh"]
 
 ENV APP_ROOT /src
 ENV CONFIG_ROOT /config
