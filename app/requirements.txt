@@ -12,6 +12,7 @@ ipykernel
 Image
 psycopg2
 requests
+requests_html
 websockets
 subprocess.run
 numpy
