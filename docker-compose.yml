@@ -4,8 +4,12 @@ services:
   db:
     image: postgres
     container_name: db
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust      
     ports:
       - "5432:5432"
+    #volumes:
+      #- ${DATA_DB}:/var/lib/postgresql/data
   app:
     # build: .
     image: sappachok/docker-datasci:latest
@@ -14,11 +18,8 @@ services:
     env_file:
       - .env
     volumes:
-<<<<<<< HEAD
-      - /d/docker/repo/django-datasci-app:/src
-=======
-      - /d/repo/django-datasci-app:/src
->>>>>>> 5c9def4187dad00fa58bd2e10a4f059b4634e128
+      - ${DATA_APP_ROOT}:/src
+      #- /d/repo/django-datasci-app:/src
     ports:
       - "8000:8000"
       - "5678:5678"
